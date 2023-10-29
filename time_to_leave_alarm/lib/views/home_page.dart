@@ -18,6 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
+    Navigator.pushNamed(context, '/map');
   }
 
   @override
