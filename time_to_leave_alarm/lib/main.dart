@@ -22,13 +22,13 @@ class MyApp extends StatelessWidget {
         ],
         builder: (context, child) {
           return MaterialApp(
-            title: 'Flutter Demo',
+            title: 'Time2Leave',
             theme: AppTheme.theme,
             initialRoute: MyHomePage.route,
             routes: {
               MyHomePage.route: (context) =>
-                  const MyHomePage(title: 'Flutter Demo Home Page'),
-              MapPage.route: (context) => const MapPage(title: 'Map Page'),
+                  const MyHomePage(title: 'Time2Leave'),
+              MapPage.route: (context) => const MapPage(title: 'Map'),
             },
           );
         });

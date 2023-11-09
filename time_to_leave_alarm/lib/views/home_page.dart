@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-
 class MyHomePage extends StatefulWidget {
   static const route = '/';
 
@@ -42,9 +41,14 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextField(controller: fromController,),
-            TextField(controller: toController, ),
-            ElevatedButton(onPressed: () => submitRequest(), child: Text("Submit")),
+            TextField(
+              controller: fromController,
+            ),
+            TextField(
+              controller: toController,
+            ),
+            ElevatedButton(
+                onPressed: () => submitRequest(), child: Text("Submit")),
             Text(time_to_leave)
           ],
         ),
@@ -58,12 +62,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   submitRequest() {
     final queryParameters = {
-      'destinations': 'FADEUP',
-      'origins': '41.178087,-8.595067',
+      'destinations': fromController.text.toString(),
+      'origins': toController.text.toString(),
       'mode': 'driving',
       'key': '', // TODO hide key
     };
-    final uri = Uri.https('maps.googleapis.com', '/maps/api/distancematrix/json', queryParameters);
+    final uri = Uri.https('maps.googleapis.com',
+        '/maps/api/distancematrix/json', queryParameters);
     debugPrint(uri.toString());
     http.get(uri).then((value) {
       debugPrint(value.body);
