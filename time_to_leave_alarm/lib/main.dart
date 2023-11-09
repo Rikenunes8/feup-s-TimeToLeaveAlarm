@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/controllers/providers/example_provider.dart';
 import 'package:time_to_leave_alarm/theme.dart';
 import 'package:time_to_leave_alarm/views/home_page.dart';
+import 'package:time_to_leave_alarm/views/map_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,14 +22,15 @@ class MyApp extends StatelessWidget {
         ],
         builder: (context, child) {
           return MaterialApp(
-            title: 'Flutter Demo',
+            title: 'Time2Leave',
             theme: AppTheme.theme,
             initialRoute: MyHomePage.route,
             routes: {
-              MyHomePage.route: (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
+              MyHomePage.route: (context) =>
+                  const MyHomePage(title: 'Time2Leave'),
+              MapPage.route: (context) => const MapPage(title: 'Map'),
             },
           );
-        }
-    );
+        });
   }
 }
