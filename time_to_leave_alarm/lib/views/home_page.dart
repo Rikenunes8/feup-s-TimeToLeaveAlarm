@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 
 class MyHomePage extends StatefulWidget {
   static const route = '/';
@@ -12,12 +14,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final fromController = TextEditingController();
+  final toController = TextEditingController();
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  final time_to_leave = '';
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    fromController.dispose();
+    toController.dispose();
+    super.dispose();
+  }
+
+  void openMap() {
     Navigator.pushNamed(context, '/map');
   }
 
@@ -32,21 +42,32 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            TextField(controller: fromController,),
+            TextField(controller: toController, ),
+            ElevatedButton(onPressed: () => submitRequest(), child: Text("Submit")),
+            Text(time_to_leave)
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: openMap,
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  submitRequest() {
+    final queryParameters = {
+      'destinations': 'FADEUP',
+      'origins': '41.178087,-8.595067',
+      'mode': 'driving',
+      'key': '', // TODO hide key
+    };
+    final uri = Uri.https('maps.googleapis.com', '/maps/api/distancematrix/json', queryParameters);
+    debugPrint(uri.toString());
+    http.get(uri).then((value) {
+      debugPrint(value.body);
+      debugPrint(value.statusCode.toString());
+    });
   }
 }
