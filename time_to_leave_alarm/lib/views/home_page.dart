@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_places_flutter/google_places_flutter.dart';
+import 'package:time_to_leave_alarm/controllers/api/secrets.dart';
 
 class MyHomePage extends StatefulWidget {
   static const route = '/';
@@ -68,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: GooglePlaceAutoCompleteTextField(
           textEditingController: controller,
-          googleAPIKey: "",
+          googleAPIKey: googleAutocompleteAPIKey,
           inputDecoration: const InputDecoration(
             hintText: "Search your location",
             border: InputBorder.none,
@@ -124,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
       'destinations': fromController.text.toString(),
       'origins': toController.text.toString(),
       'mode': 'driving',
-      'key': '', // TODO hide key
+      'key': googleDistanceAPIKey,
     };
     final uri = Uri.https('maps.googleapis.com',
         '/maps/api/distancematrix/json', queryParameters);
