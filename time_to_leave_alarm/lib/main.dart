@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:time_to_leave_alarm/app.dart';
 import 'package:time_to_leave_alarm/controllers/providers/example_provider.dart';
 import 'package:time_to_leave_alarm/theme.dart';
 import 'package:time_to_leave_alarm/views/home_page.dart';
@@ -22,12 +23,12 @@ class MyApp extends StatelessWidget {
         ],
         builder: (context, child) {
           return MaterialApp(
-            title: 'Time2Leave',
+            title: appTitle,
             theme: AppTheme.theme,
             initialRoute: MyHomePage.route,
             routes: {
               MyHomePage.route: (context) =>
-                  const MyHomePage(title: 'Time2Leave'),
+                  const MyHomePage(title: appTitle),
               MapPage.route: (context) => const MapPage(title: 'Map'),
             },
           );
