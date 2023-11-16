@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/app.dart';
 import 'package:time_to_leave_alarm/controllers/providers/example_provider.dart';
 import 'package:time_to_leave_alarm/theme.dart';
+import 'package:time_to_leave_alarm/views/create_page.dart';
 import 'package:time_to_leave_alarm/views/home_page.dart';
 import 'package:time_to_leave_alarm/views/map_page.dart';
 
@@ -27,9 +28,9 @@ class MyApp extends StatelessWidget {
             theme: AppTheme.theme,
             initialRoute: MyHomePage.route,
             routes: {
-              MyHomePage.route: (context) =>
-                  const MyHomePage(title: appTitle),
+              MyHomePage.route: (context) => const MyHomePage(title: appTitle),
               MapPage.route: (context) => const MapPage(title: 'Map'),
+              CreatePage.route: (context) => const CreatePage(title: 'Create'),
             },
           );
         });

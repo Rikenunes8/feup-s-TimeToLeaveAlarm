@@ -16,6 +16,7 @@ class _MapPageState extends State<MapPage> {
   late GoogleMapController mapController;
 
   final LatLng _center = const LatLng(41.18, -8.60);
+  LatLng? _selectedLocation;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -24,25 +25,36 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: CameraPosition(
-          target: _center,
-          zoom: 11.0,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
         ),
-        markers: {
-          const Marker(
-              markerId: MarkerId("FEUP"),
-              position: LatLng(41.178087, -8.595067),
-              infoWindow: InfoWindow(
-                  title: "FEUP",
-                  snippet: "Faculdade de Engenharia da Universidade do Porto"))
-        },
-      ),
-    );
+        body: GoogleMap(
+          onMapCreated: _onMapCreated,
+          initialCameraPosition: CameraPosition(
+            target: _center,
+            zoom: 11.0,
+          ),
+          markers: _selectedLocation != null
+              ? {
+                  Marker(
+                    markerId:
+                        MarkerId("Selected ${_selectedLocation.toString()}"),
+                    position: _selectedLocation!,
+                  )
+                }
+              : {},
+          onTap: (LatLng latLng) {
+            setState(() {
+              _selectedLocation = latLng;
+            });
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pop(context, _selectedLocation);
+          },
+          child: const Icon(Icons.check),
+        ));
   }
 }
