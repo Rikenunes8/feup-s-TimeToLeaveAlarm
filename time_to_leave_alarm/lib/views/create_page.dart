@@ -1,12 +1,10 @@
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:time_to_leave_alarm/controllers/api/requests/calculate_distance.dart';
-import 'package:time_to_leave_alarm/controllers/api/requests/coordinates_to_address.dart';
 import 'package:time_to_leave_alarm/controllers/api/widgets/AutoCompleteTextField.dart';
-import 'package:time_to_leave_alarm/views/map_page.dart';
+import 'package:time_to_leave_alarm/components/MyLocationButton.dart';
+import 'package:time_to_leave_alarm/components/MapLocationButton.dart';
 
 class CreatePage extends StatefulWidget {
   static const route = '/create';
@@ -41,66 +39,6 @@ class _CreatePageState extends State<CreatePage> {
     } else {
       return Container();
     }
-  }
-
-  // Shamelessly stolen from https://medium.com/@fernnandoptr/how-to-get-users-current-location-address-in-flutter-geolocator-geocoding-be563ad6f66a
-  Future<bool> _handleLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Location services are disabled. Please enable the services')));
-      return false;
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permissions are denied')));
-        return false;
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Location permissions are permanently denied, we cannot request permissions.')));
-      return false;
-    }
-    return true;
-  }
-
-  Future<void> _onPressedLocationButton(
-      TextEditingController controller) async {
-    final hasPermission = await _handleLocationPermission();
-    if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) {
-      print(position);
-      convertCoordinatesToAddress(
-          origin: LatLng(
-            position.latitude,
-            position.longitude,
-          ),
-          then: (address) => controller.text = address);
-    });
-  }
-
-  Future<void> _onPressedMapButton(
-      BuildContext context, TextEditingController controller) async {
-    final coordinates = await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => const MapPage(title: 'Select location')),
-    );
-
-    if (!mounted) return;
-
-    convertCoordinatesToAddress(
-        origin: coordinates, then: (address) => controller.text = address);
   }
 
   @override
@@ -192,12 +130,8 @@ class _CreatePageState extends State<CreatePage> {
             ),
           ),
         ),
-        ElevatedButton(
-            onPressed: () => _onPressedLocationButton(controller),
-            child: const Icon(Icons.my_location)),
-        ElevatedButton(
-            onPressed: () => _onPressedMapButton(context, controller),
-            child: const Icon(Icons.map))
+        MyLocationButton(then: (address) => {controller.text = address}),
+        MapLocationButton(then: (address) => {controller.text = address}),
       ],
     );
   }
