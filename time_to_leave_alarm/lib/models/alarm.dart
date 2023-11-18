@@ -8,13 +8,14 @@ class Alarm {
   final String destination;
   final String period;
   final String periodData;
+  bool turnedOn;
 
   Alarm(
       this.arriveTime,
       this.leaveTime,
       this.origin,
       this.destination,
-      {this.id, this.name = '', this.mode = 'driving', this.period = '', this.periodData = '',}
+      {this.id, this.name = '', this.mode = 'driving', this.period = '', this.periodData = '', this.turnedOn = true}
       );
 
   Alarm.fromMap(json) : this(
@@ -26,7 +27,8 @@ class Alarm {
       name: json["name"],
       mode: json["mode"],
       period: json["period"],
-      periodData: json["period_data"]
+      periodData: json["period_data"],
+      turnedOn: json["turned_on"] == 0 ? false : true
   );
 
   Map<String, dynamic> toMap() {
@@ -39,7 +41,8 @@ class Alarm {
       "origin": origin,
       "destination": destination,
       "period": period,
-      "period_data": periodData
+      "period_data": periodData,
+      "turned_on": turnedOn ? 1 : 0
     };
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
 import 'package:time_to_leave_alarm/controllers/utils.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
 
@@ -21,6 +23,7 @@ class _AlarmCardState extends State<AlarmCard> {
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
                 children: [
@@ -45,10 +48,11 @@ class _AlarmCardState extends State<AlarmCard> {
                 ],
               ),
               Switch(
-                value: true,
-                activeColor: Colors.red,
+                value: widget.alarm.turnedOn,
+
                 onChanged: (bool value) {
-                  setState(() {});
+                  widget.alarm.turnedOn = value;
+                  context.read<AlarmProvider>().updateAlarm(widget.alarm);
                 },
               )
             ],
@@ -57,7 +61,7 @@ class _AlarmCardState extends State<AlarmCard> {
           const SizedBox(
             height: 5,
           ),
-          _address(Icons.location_on, widget.alarm.destination),
+          _address(Icons.location_on_outlined, widget.alarm.destination),
         ],
       ),
     ));

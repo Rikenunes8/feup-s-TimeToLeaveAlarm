@@ -18,6 +18,7 @@ class DatabaseManager {
   static const String destinationCol = "destination";
   static const String periodCol = "period";
   static const String periodDataCol = "period_data";
+  static const String turnedOnCol = "turned_on";
 
 
   Future<Database> get database async {
@@ -34,7 +35,7 @@ class DatabaseManager {
 
     return openDatabase(
         path,
-        version: 1,
+        version: 2,
         onCreate: (db, version) async {
           await createAlarmsTable(db);
           await seedDatabase(db);
@@ -59,7 +60,8 @@ class DatabaseManager {
         $originCol TEXT,
         $destinationCol TEXT,
         $periodCol TEXT,
-        $periodDataCol TEXT
+        $periodDataCol TEXT,
+        $turnedOnCol INTEGER
       );
       '''
     );
