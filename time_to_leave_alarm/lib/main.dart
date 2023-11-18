@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/app.dart';
-import 'package:time_to_leave_alarm/controllers/providers/example_provider.dart';
+import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
 import 'package:time_to_leave_alarm/theme.dart';
 import 'package:time_to_leave_alarm/views/create_page.dart';
 import 'package:time_to_leave_alarm/views/home_page.dart';
@@ -16,11 +16,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ExampleProvider exampleProvider = ExampleProvider()
+    AlarmProvider alarmProvider = AlarmProvider();
+    alarmProvider.fetchAlarmsFromDatabase();
     return MultiProvider(
         providers: [
-          // ChangeNotifierProvider<ExampleProvider>.value(value: exampleProvider),
-          ChangeNotifierProvider(create: (_) => ExampleProvider()),
+          ChangeNotifierProvider<AlarmProvider>.value(value: alarmProvider),
+          // ChangeNotifierProvider(create: (_) => AlarmProvider()),
         ],
         builder: (context, child) {
           return MaterialApp(

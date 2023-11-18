@@ -1,10 +1,14 @@
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/controllers/api/requests/calculate_distance.dart';
 import 'package:time_to_leave_alarm/controllers/api/widgets/AutoCompleteTextField.dart';
 import 'package:time_to_leave_alarm/components/MyLocationButton.dart';
 import 'package:time_to_leave_alarm/components/MapLocationButton.dart';
+import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
+import 'package:time_to_leave_alarm/controllers/utils.dart';
+import 'package:time_to_leave_alarm/models/alarm.dart';
 
 class CreatePage extends StatefulWidget {
   static const route = '/create';
@@ -65,6 +69,13 @@ class _CreatePageState extends State<CreatePage> {
                           setState(() {
                             travel_time = time;
                           });
+                          final arrivalTime = formatDateTime(time_to_arrive!);
+                          final leaveTime = travel_time != null
+                              ? formatDateTime(time_to_arrive!.subtract(Duration(seconds: travel_time)))
+                              : arrivalTime;
+                          final alarm = Alarm(arrivalTime, leaveTime, fromController.text.toString(), toController.text.toString());
+                          context.read<AlarmProvider>().addAlarm(alarm);
+                          Navigator.pop(context);
                         },
                       ),
                   child: const Text("Submit")),
