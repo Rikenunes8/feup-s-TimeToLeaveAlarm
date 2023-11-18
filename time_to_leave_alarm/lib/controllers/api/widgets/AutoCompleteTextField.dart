@@ -15,12 +15,12 @@ class AutoCompleteTextField extends StatelessWidget {
 
   Widget buildMock(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       alignment: Alignment.centerLeft,
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         border: Border.all(color: Colors.grey, width: 0.6),
-        borderRadius: BorderRadius.all(Radius.circular(10))
+        borderRadius: const BorderRadius.all(Radius.circular(10))
       ),
       child: TextField(
         controller: controller,
@@ -43,10 +43,10 @@ class AutoCompleteTextField extends StatelessWidget {
         enabledBorder: InputBorder.none,
       ),
       debounceTime: 400,
-      countries: ["pt"],
+      countries: const ["pt"],
       isLatLngRequired: false,
       getPlaceDetailWithLatLng: (Prediction prediction) {
-        print("placeDetails" + prediction.lat.toString());
+        print("placeDetails${prediction.lat}");
       },
 
       itemClick: (Prediction prediction) {
@@ -65,7 +65,7 @@ class AutoCompleteTextField extends StatelessWidget {
               const SizedBox(
                 width: 7,
               ),
-              Expanded(child: Text("${prediction.description ?? ""}"))
+              Expanded(child: Text(prediction.description ?? ""))
             ],
           ),
         );

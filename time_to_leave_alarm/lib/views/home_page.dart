@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Container(
           padding: const EdgeInsets.all(20),
-          child: Column(
+          child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[],
           ),
