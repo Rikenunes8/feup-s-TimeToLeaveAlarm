@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:time_to_leave_alarm/components/alarm_card.dart';
+import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
 
 class MyHomePage extends StatefulWidget {
   static const route = '/';
@@ -18,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final alarms = context.watch<AlarmProvider>().alarms;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -25,11 +29,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Container(
-          padding: const EdgeInsets.all(20),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[],
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+          child: ListView.builder(
+              itemCount: alarms.length,
+              itemBuilder: (BuildContext context, int index) {
+                return AlarmCard(alarm: alarms[index]);
+              }),
         ),
       ),
       floatingActionButton: FloatingActionButton(

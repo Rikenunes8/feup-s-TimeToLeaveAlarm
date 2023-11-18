@@ -16,11 +16,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ExampleProvider exampleProvider = ExampleProvider()
+    AlarmProvider alarmProvider = AlarmProvider();
+    alarmProvider.fetchAlarmsFromDatabase();
     return MultiProvider(
         providers: [
-          // ChangeNotifierProvider<ExampleProvider>.value(value: exampleProvider),
-          ChangeNotifierProvider(create: (_) => AlarmProvider()),
+          ChangeNotifierProvider<AlarmProvider>.value(value: alarmProvider),
+          // ChangeNotifierProvider(create: (_) => AlarmProvider()),
         ],
         builder: (context, child) {
           return MaterialApp(

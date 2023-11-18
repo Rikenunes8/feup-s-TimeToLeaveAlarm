@@ -51,7 +51,7 @@ class DatabaseManager {
     await db.execute(
       '''
       CREATE TABLE $alarmsTable (
-        $idCol INTEGER PRIMARY KEY AUTOINCREMENT
+        $idCol INTEGER PRIMARY KEY AUTOINCREMENT,
         $nameCol TEXT,
         $arriveTimeCol TEXT,
         $leaveTimeCol TEXT,
@@ -59,7 +59,7 @@ class DatabaseManager {
         $originCol TEXT,
         $destinationCol TEXT,
         $periodCol TEXT,
-        $periodDataCol TEXT,
+        $periodDataCol TEXT
       );
       '''
     );
@@ -98,6 +98,6 @@ class DatabaseManager {
   Future<List<Alarm>> getAlarms() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query(alarmsTable);
-    return List.generate(maps.length, (i) => Alarm.fromJson(maps[i]));
+    return List.generate(maps.length, (i) => Alarm.fromMap(maps[i]));
   }
 }
