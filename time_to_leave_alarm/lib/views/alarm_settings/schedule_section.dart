@@ -2,6 +2,7 @@ import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_icon_tile.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
+import 'package:time_to_leave_alarm/components/week_days.dart';
 
 class ScheduleSection extends StatefulWidget {
   final ScheduleController controller;
@@ -35,21 +36,45 @@ class _ScheduleSectionState extends State<ScheduleSection> {
           )),
       AlarmSettingsIconTile(
           icon: Icons.repeat,
-          child: TextButton(
-            style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                alignment: Alignment.centerLeft),
-            onPressed: () {},
-            child: const Text(
-              "Does not repeat",
-              style: TextStyle(fontSize: 16, color: Colors.black38),
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    alignment: Alignment.centerLeft),
+                onPressed: () {
+                  setState(() {
+                    widget.controller.repeat = !widget.controller.repeat;
+                  });
+                },
+                child: Text(
+                  widget.controller.repeat ? "Repeat" : "Does not repeat",
+                  style: const TextStyle(fontSize: 16, color: Colors.black38),
+                ),
+              ),
+              widget.controller.repeat
+                  ? WeekDaysChips(selected: widget.controller.repeatValues, callback: (weekDay) {
+                    setState(() {
+                      var selectList = widget.controller.repeatValues.split(",");
+                      if (selectList.contains(weekDay.toString())) {
+                        selectList.remove(weekDay.toString());
+                      } else {
+                        selectList.add(weekDay.toString());
+                      }
+                      widget.controller.repeatValues = selectList.join(",");
+                    });
+              },)
+                  : Container()
+            ],
           )),
     ]);
   }
 }
 
-class ScheduleController{
+class ScheduleController {
   DateTime? dateTime;
+  bool repeat = false;
+  String repeatValues = "";
 }
