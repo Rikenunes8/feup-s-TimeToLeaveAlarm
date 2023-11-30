@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:time_to_leave_alarm/app.dart';
 import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
 import 'package:time_to_leave_alarm/theme.dart';
@@ -7,7 +8,11 @@ import 'package:time_to_leave_alarm/views/create_page.dart';
 import 'package:time_to_leave_alarm/views/home_page.dart';
 import 'package:time_to_leave_alarm/views/map_page.dart';
 
-void main() {
+void main() async {
+  // Be sure to add this line if initialize() call happens before runApp()
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await AndroidAlarmManager.initialize();
   runApp(const MyApp());
 }
 
@@ -31,7 +36,8 @@ class MyApp extends StatelessWidget {
             routes: {
               MyHomePage.route: (context) => const MyHomePage(title: appTitle),
               MapPage.route: (context) => const MapPage(title: 'Map'),
-              CreatePage.route: (context) => const CreatePage(title: 'Setup Alarm'),
+              CreatePage.route: (context) =>
+                  const CreatePage(title: 'Setup Alarm'),
             },
           );
         });

@@ -26,7 +26,8 @@ calculateDistance(
       debugPrint(value.statusCode.toString());
       var json = jsonDecode(value.body);
       var element = json["rows"][0]["elements"][0];
-      var time = element["duration_in_traffic"]["value"];
+      var time = element["duration"]
+          ["value"]; // duration_in_traffic is not always available
       then(time);
     });
   }

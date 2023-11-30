@@ -1,6 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:time_to_leave_alarm/controllers/api/requests/calculate_distance.dart';
 import 'package:time_to_leave_alarm/controllers/api/widgets/auto_complete_text_field.dart';
 import 'package:time_to_leave_alarm/components/my_location_button.dart';
@@ -71,27 +71,28 @@ class _CreatePageState extends State<CreatePage> {
         onPressed: () => calculateDistance(
             origin: destinationsController.fromController.text.toString(),
             destination: destinationsController.toController.text.toString(),
-            then: (time) {
-              final arrivalTime = formatDateTime(scheduleController.dateTime!);
-              final leaveTime = scheduleController.dateTime != null
+            then: (time) async {
+              final arrivalTimeString =
+                  formatDateTime(scheduleController.dateTime!);
+              final leaveDatetime = scheduleController.dateTime != null
+                  ? scheduleController.dateTime!
+                      .subtract(Duration(seconds: time))
+                  : scheduleController.dateTime;
+              final leaveTimeString = scheduleController.dateTime != null
                   ? formatDateTime(scheduleController.dateTime!
                       .subtract(Duration(seconds: time)))
-                  : arrivalTime;
+                  : arrivalTimeString;
+
+              final androidAlarmId = Random().nextInt(2147483647);
+
               final alarm = Alarm(
-                  arrivalTime,
-                  leaveTime,
+                  arrivalTimeString,
+                  leaveTimeString,
                   destinationsController.fromController.text.toString(),
                   destinationsController.toController.text.toString(),
-                  mode: transportController.mean.toString());
+                  mode: transportController.mean.toString(),
+                  androidAlarmId: androidAlarmId);
               context.read<AlarmProvider>().addAlarm(alarm);
-
-              if (scheduleController.dateTime != null) {
-                // TODO: This is sketchy
-                FlutterAlarmClock.createAlarm(
-                    hour: scheduleController.dateTime!.hour,
-                    minutes: scheduleController.dateTime!.minute,
-                    title: "Time to leave");
-              }
 
               Navigator.pop(context);
             }),

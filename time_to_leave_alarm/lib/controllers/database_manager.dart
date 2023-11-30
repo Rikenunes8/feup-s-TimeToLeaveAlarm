@@ -2,7 +2,6 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
 
-
 class DatabaseManager {
   Database? _database;
 
@@ -19,7 +18,7 @@ class DatabaseManager {
   static const String periodCol = "period";
   static const String periodDataCol = "period_data";
   static const String turnedOnCol = "turned_on";
-
+  static const String androidAlarmIdCol = "android_alarm_id";
 
   Future<Database> get database async {
     if (_database != null) {
@@ -33,24 +32,18 @@ class DatabaseManager {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, databaseFilename);
 
-    return openDatabase(
-        path,
-        version: 2,
-        onCreate: (db, version) async {
-          await createAlarmsTable(db);
-          await seedDatabase(db);
-        },
-        onUpgrade: (db, oldVersion, newVersion) async {
-          if (oldVersion < newVersion) {
-            await seedDatabase(db);
-          }
-        }
-    );
+    return openDatabase(path, version: 2, onCreate: (db, version) async {
+      await createAlarmsTable(db);
+      await seedDatabase(db);
+    }, onUpgrade: (db, oldVersion, newVersion) async {
+      if (oldVersion < newVersion) {
+        await seedDatabase(db);
+      }
+    });
   }
 
   createAlarmsTable(Database db) async {
-    await db.execute(
-      '''
+    await db.execute('''
       CREATE TABLE $alarmsTable (
         $idCol INTEGER PRIMARY KEY AUTOINCREMENT,
         $nameCol TEXT,
@@ -61,10 +54,10 @@ class DatabaseManager {
         $destinationCol TEXT,
         $periodCol TEXT,
         $periodDataCol TEXT,
-        $turnedOnCol INTEGER
+        $turnedOnCol INTEGER,
+        $androidAlarmIdCol INTEGER
       );
-      '''
-    );
+      ''');
   }
 
   seedDatabase(Database db) {}
@@ -80,12 +73,8 @@ class DatabaseManager {
 
   Future<void> updateAlarm(Alarm alarm) async {
     final db = await database;
-    await db.update(
-      alarmsTable,
-      alarm.toMap(),
-      where: '$idCol = ?',
-      whereArgs: [alarm.id]
-    );
+    await db.update(alarmsTable, alarm.toMap(),
+        where: '$idCol = ?', whereArgs: [alarm.id]);
   }
 
   Future<void> deleteAlarm(int id) async {
