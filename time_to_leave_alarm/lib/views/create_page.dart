@@ -1,7 +1,6 @@
-import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_alarm_clock/flutter_alarm_clock.dart';
 import 'package:time_to_leave_alarm/controllers/api/requests/calculate_distance.dart';
 import 'package:time_to_leave_alarm/controllers/api/widgets/auto_complete_text_field.dart';
 import 'package:time_to_leave_alarm/components/my_location_button.dart';
@@ -26,7 +25,8 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  final DestinationsController destinationsController = DestinationsController();
+  final DestinationsController destinationsController =
+      DestinationsController();
   final ScheduleController scheduleController = ScheduleController();
   final TransportController transportController = TransportController();
   final AlarmController alarmController = AlarmController();
@@ -74,16 +74,25 @@ class _CreatePageState extends State<CreatePage> {
             then: (time) {
               final arrivalTime = formatDateTime(scheduleController.dateTime!);
               final leaveTime = scheduleController.dateTime != null
-                  ? formatDateTime(scheduleController.dateTime!.subtract(Duration(seconds: time)))
+                  ? formatDateTime(scheduleController.dateTime!
+                      .subtract(Duration(seconds: time)))
                   : arrivalTime;
               final alarm = Alarm(
                   arrivalTime,
                   leaveTime,
                   destinationsController.fromController.text.toString(),
                   destinationsController.toController.text.toString(),
-                  mode: transportController.mean.toString()
-              );
+                  mode: transportController.mean.toString());
               context.read<AlarmProvider>().addAlarm(alarm);
+
+              if (scheduleController.dateTime != null) {
+                // TODO: This is sketchy
+                FlutterAlarmClock.createAlarm(
+                    hour: scheduleController.dateTime!.hour,
+                    minutes: scheduleController.dateTime!.minute,
+                    title: "Time to leave");
+              }
+
               Navigator.pop(context);
             }),
         child: const Icon(Icons.check),

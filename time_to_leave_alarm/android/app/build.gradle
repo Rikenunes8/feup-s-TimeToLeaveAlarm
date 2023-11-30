@@ -52,7 +52,7 @@ android {
         applicationId "pt.up.fe.s.ttla.time_to_leave_alarm"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21 // Minimum SDK version supported by Maps SDK for Android
+        minSdkVersion 34 // Minimum SDK version supported by Maps SDK for Android
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
