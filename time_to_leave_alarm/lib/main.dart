@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
             routes: {
               MyHomePage.route: (context) => const MyHomePage(title: appTitle),
               MapPage.route: (context) => const MapPage(title: 'Map'),
-              CreatePage.route: (context) => const CreatePage(title: 'Create'),
+              CreatePage.route: (context) => const CreatePage(title: 'Setup Alarm'),
             },
           );
         });

@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/controllers/api/requests/calculate_distance.dart';
-import 'package:time_to_leave_alarm/controllers/api/widgets/AutoCompleteTextField.dart';
-import 'package:time_to_leave_alarm/components/MyLocationButton.dart';
-import 'package:time_to_leave_alarm/components/MapLocationButton.dart';
+import 'package:time_to_leave_alarm/controllers/api/widgets/auto_complete_text_field.dart';
+import 'package:time_to_leave_alarm/components/my_location_button.dart';
+import 'package:time_to_leave_alarm/components/map_location_button.dart';
 import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
 import 'package:time_to_leave_alarm/controllers/utils.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
+import 'package:time_to_leave_alarm/views/alarm_settings/alarm_section.dart';
+import 'package:time_to_leave_alarm/views/alarm_settings/destinations_section.dart';
+import 'package:time_to_leave_alarm/views/alarm_settings/schedule_section.dart';
+import 'package:time_to_leave_alarm/views/alarm_settings/transport_section.dart';
 
 class CreatePage extends StatefulWidget {
   static const route = '/create';
@@ -22,105 +26,68 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  final fromController = TextEditingController();
-  final toController = TextEditingController();
-
-  var travel_time;
-  DateTime? time_to_arrive;
+  final DestinationsController destinationsController = DestinationsController();
+  final ScheduleController scheduleController = ScheduleController();
+  final TransportController transportController = TransportController();
+  final AlarmController alarmController = AlarmController();
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
-    fromController.dispose();
-    toController.dispose();
+    destinationsController.dispose();
+    alarmController.dispose();
     super.dispose();
-  }
-
-  timeToLeave() {
-    if (travel_time != null && time_to_arrive != null) {
-      var leave = time_to_arrive!.subtract(Duration(seconds: travel_time));
-      return Text("Leave at: ${DateFormat('dd/MM/yyyy HH:mm').format(leave)}");
-    } else {
-      return Container();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              placesAutoCompleteTextField('From', fromController),
-              placesAutoCompleteTextField('To', toController),
-              timefield('Arrive at'),
-              ElevatedButton(
-                  onPressed: () => calculateDistance(
-                        origin: fromController.text.toString(),
-                        destination: toController.text.toString(),
-                        then: (time) {
-                          setState(() {
-                            travel_time = time;
-                          });
-                          final arrivalTime = formatDateTime(time_to_arrive!);
-                          final leaveTime = travel_time != null
-                              ? formatDateTime(time_to_arrive!.subtract(Duration(seconds: travel_time)))
-                              : arrivalTime;
-                          final alarm = Alarm(arrivalTime, leaveTime, fromController.text.toString(), toController.text.toString());
-                          context.read<AlarmProvider>().addAlarm(alarm);
-                          Navigator.pop(context);
-                        },
-                      ),
-                  child: const Text("Submit")),
-              timeToLeave(),
-            ],
-          ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            DestinationsSection(
+              controller: destinationsController,
+            ),
+            ScheduleSection(
+              controller: scheduleController,
+            ),
+            TransportSection(
+              controller: transportController,
+            ),
+            AlarmSection(controller: alarmController),
+            const SizedBox(
+              height: 100,
+            )
+          ],
         ),
       ),
-    );
-  }
-
-  timefield(String label) {
-    return Row(
-      children: <Widget>[
-        Container(
-          width: 65,
-          child: Text(label),
-        ),
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  border: Border.all(color: Colors.grey, width: 0.6),
-                  borderRadius: const BorderRadius.all(Radius.circular(10))),
-              child: DateTimeField(
-                  decoration: const InputDecoration(
-                    hintText: 'Select date and time',
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                  ),
-                  selectedDate: time_to_arrive,
-                  onDateSelected: (DateTime value) {
-                    setState(() {
-                      time_to_arrive = value;
-                    });
-                  }),
-            ),
-          ),
-        ),
-      ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => calculateDistance(
+            origin: destinationsController.fromController.text.toString(),
+            destination: destinationsController.toController.text.toString(),
+            then: (time) {
+              final arrivalTime = formatDateTime(scheduleController.dateTime!);
+              final leaveTime = scheduleController.dateTime != null
+                  ? formatDateTime(scheduleController.dateTime!.subtract(Duration(seconds: time)))
+                  : arrivalTime;
+              final alarm = Alarm(
+                  arrivalTime,
+                  leaveTime,
+                  destinationsController.fromController.text.toString(),
+                  destinationsController.toController.text.toString(),
+                  mode: transportController.mean.toString()
+              );
+              context.read<AlarmProvider>().addAlarm(alarm);
+              Navigator.pop(context);
+            }),
+        child: const Icon(Icons.check),
+      ),
     );
   }
 
