@@ -4,9 +4,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:time_to_leave_alarm/controllers/api/requests/coordinates_to_address.dart';
 
 class MyLocationButton extends StatelessWidget {
-  const MyLocationButton({super.key, required this.then});
+  const MyLocationButton({super.key, required this.then, this.iconSize = 30});
 
   final Function(String) then;
+  final double iconSize;
+
 
   // Shamelessly stolen from https://medium.com/@fernnandoptr/how-to-get-users-current-location-address-in-flutter-geolocator-geocoding-be563ad6f66a
   Future<bool> _handleLocationPermission(BuildContext context) async {
@@ -54,8 +56,11 @@ class MyLocationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return IconButton(
+        padding: const EdgeInsets.all(2),
+        iconSize: iconSize,
         onPressed: () => _onPressedLocationButton(context),
-        child: const Icon(Icons.my_location));
+        icon: const Icon(Icons.my_location),
+    );
   }
 }

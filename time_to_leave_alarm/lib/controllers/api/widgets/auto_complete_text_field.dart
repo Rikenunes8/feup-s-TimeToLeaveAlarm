@@ -4,33 +4,20 @@ import 'package:google_places_flutter/model/prediction.dart';
 import 'package:time_to_leave_alarm/controllers/api/secrets.dart';
 
 class AutoCompleteTextField extends StatelessWidget {
-  const AutoCompleteTextField(
-      {Key? key,
-      required this.controller,
-      required this.hintText})
+  const AutoCompleteTextField({Key? key, required this.controller, required this.hintText})
       : super(key: key);
 
   final TextEditingController controller;
   final String hintText;
 
   Widget buildMock(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      alignment: Alignment.centerLeft,
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        border: Border.all(color: Colors.grey, width: 0.6),
-        borderRadius: const BorderRadius.all(Radius.circular(10))
-      ),
-      child: TextField(
+    return TextField(
         controller: controller,
         decoration: InputDecoration(
           hintText: hintText,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
-        ),
-      )
-    );
+        ));
   }
 
   Widget buildApi(BuildContext context) {
@@ -48,11 +35,10 @@ class AutoCompleteTextField extends StatelessWidget {
       getPlaceDetailWithLatLng: (Prediction prediction) {
         print("placeDetails${prediction.lat}");
       },
-
       itemClick: (Prediction prediction) {
         controller.text = prediction.description ?? "";
-        controller.selection = TextSelection.fromPosition(
-            TextPosition(offset: prediction.description?.length ?? 0));
+        controller.selection =
+            TextSelection.fromPosition(TextPosition(offset: prediction.description?.length ?? 0));
       },
       seperatedBuilder: const Divider(),
       // OPTIONAL// If you want to customize list view item builder
