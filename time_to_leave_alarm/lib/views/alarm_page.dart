@@ -114,6 +114,10 @@ class _AlarmPageState extends State<AlarmPage> {
                 .map((e) => e.text.toString())
                 .toList(),
         destination: destination,
+        travelMode: transportController.mean.toShortString(),
+        avoidFerries: transportController.ferries,
+        avoidHighways: transportController.highways,
+        avoidTolls: transportController.tolls,
         then: (time) async {
           final newAlarm = alarm == null;
           final leaveTimeString = formatDateTime(arrivalTime.subtract(Duration(seconds: time)));

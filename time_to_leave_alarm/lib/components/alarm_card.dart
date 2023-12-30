@@ -76,7 +76,7 @@ class _AlarmCardState extends State<AlarmCard> {
         for (final address in intermediateAddressesNotEmpty)
         Column(children:[
           _address(Icons.circle_outlined, address),
-          SizedBox(height: 5)
+          const SizedBox(height: 5)
         ]),
       ],
     );
@@ -100,13 +100,13 @@ class _AlarmCardState extends State<AlarmCard> {
 
   IconData? modeIcon(String mode) {
     switch (mode) {
-      case 'driving':
+      case 'drive':
         return Icons.directions_car_outlined;
       case 'transit':
         return Icons.directions_transit_outlined;
-      case 'walking':
+      case 'walk':
         return Icons.directions_walk_outlined;
-      case 'cycling':
+      case 'bicycle':
         return Icons.directions_bike;
     }
     return null;
