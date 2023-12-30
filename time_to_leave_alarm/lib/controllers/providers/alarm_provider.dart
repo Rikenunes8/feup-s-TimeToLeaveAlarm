@@ -26,11 +26,10 @@ class AlarmProvider with ChangeNotifier {
   updateAlarm(Alarm alarm) {
     _alarms[_alarms.indexOf(alarm)] = alarm;
     DatabaseManager().updateAlarm(alarm);
+
+    cancelAlarm(alarm);
     if (alarm.turnedOn) {
-      // TODO: I really have no idea where this should go
       setAlarm(alarm);
-    } else {
-      cancelAlarm(alarm);
     }
     notifyListeners();
   }

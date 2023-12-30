@@ -36,4 +36,9 @@ class DestinationsController {
     fromController.text = alarm.origin;
     toController.text = alarm.destination;
   }
+
+  void setAlarm(Alarm alarm) {
+    alarm.origin = fromController.text;
+    alarm.destination = toController.text;
+  }
 }
