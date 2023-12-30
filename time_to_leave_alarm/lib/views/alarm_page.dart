@@ -13,18 +13,24 @@ import 'package:time_to_leave_alarm/views/alarm_settings/destinations_section.da
 import 'package:time_to_leave_alarm/views/alarm_settings/schedule_section.dart';
 import 'package:time_to_leave_alarm/views/alarm_settings/transport_section.dart';
 
-class CreatePage extends StatefulWidget {
+class AlarmPageArguments {
+  final Alarm alarm;
+
+  AlarmPageArguments(this.alarm);
+}
+
+class AlarmPage extends StatefulWidget {
   static const route = '/create';
 
-  const CreatePage({super.key, required this.title});
+  const AlarmPage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<CreatePage> createState() => _CreatePageState();
+  State<AlarmPage> createState() => _AlarmPageState();
 }
 
-class _CreatePageState extends State<CreatePage> {
+class _AlarmPageState extends State<AlarmPage> {
   final DestinationsController destinationsController =
       DestinationsController();
   final ScheduleController scheduleController = ScheduleController();
@@ -40,6 +46,10 @@ class _CreatePageState extends State<CreatePage> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as AlarmPageArguments?;
+    if (args != null) {
+      destinationsController.loadAlarm(args.alarm);
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -90,7 +100,7 @@ class _CreatePageState extends State<CreatePage> {
                   leaveTimeString,
                   destinationsController.fromController.text.toString(),
                   destinationsController.toController.text.toString(),
-                  mode: transportController.mean.toString(),
+                  mode: transportController.mean.toString(), // TODO this is not right
                   androidAlarmId: androidAlarmId);
               context.read<AlarmProvider>().addAlarm(alarm);
 

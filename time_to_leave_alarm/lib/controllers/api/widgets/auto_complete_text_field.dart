@@ -4,8 +4,7 @@ import 'package:google_places_flutter/model/prediction.dart';
 import 'package:time_to_leave_alarm/controllers/api/secrets.dart';
 
 class AutoCompleteTextField extends StatelessWidget {
-  const AutoCompleteTextField({Key? key, required this.controller, required this.hintText})
-      : super(key: key);
+  const AutoCompleteTextField({super.key, required this.controller, required this.hintText});
 
   final TextEditingController controller;
   final String hintText;
@@ -22,6 +21,7 @@ class AutoCompleteTextField extends StatelessWidget {
 
   Widget buildApi(BuildContext context) {
     return GooglePlaceAutoCompleteTextField(
+      boxDecoration: const BoxDecoration(),
       textEditingController: controller,
       googleAPIKey: googleAutocompleteAPIKey,
       inputDecoration: InputDecoration(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/components/alarm_card.dart';
 import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
+import 'package:time_to_leave_alarm/views/alarm_page.dart';
 
 class MyHomePage extends StatefulWidget {
   static const route = '/';
@@ -33,7 +34,10 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListView.builder(
               itemCount: alarms.length,
               itemBuilder: (BuildContext context, int index) {
-                return AlarmCard(alarm: alarms[index]);
+                return GestureDetector(
+                  onTap: () {Navigator.pushNamed(context, AlarmPage.route, arguments: AlarmPageArguments(alarms[index]));},
+                  child: AlarmCard(alarm: alarms[index]),
+                );
               }),
         ),
       ),
