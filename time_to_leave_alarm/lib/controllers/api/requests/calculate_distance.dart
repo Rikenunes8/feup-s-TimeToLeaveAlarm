@@ -7,28 +7,55 @@ import 'package:http/http.dart' as http;
 calculateDistance(
     {required String origin,
     required String destination,
-    required Function(int) then}) {
+    required Function(int) then,
+    List<String> intermediateLocations = const []}) {
   if (googleDistanceAPIKey == '') {
     debugPrint('Google Distance API Key not configured. Using mock data');
     then(2342);
   } else {
-    final queryParameters = {
-      'destinations': destination,
-      'origins': origin,
-      'mode': 'driving',
+    final uriParameters = {
       'key': googleDistanceAPIKey,
+      'fields': 'routes.distanceMeters,routes.duration',
     };
-    final uri = Uri.https('maps.googleapis.com',
-        '/maps/api/distancematrix/json', queryParameters);
-    debugPrint(uri.toString());
-    http.get(uri).then((value) {
+
+    var intermediates = intermediateLocations.map((e) {
+      return {
+        'address': e,
+        'via': true,
+      };
+    }).toList();
+
+    final queryParameters = {
+      'destination': {
+        'address': destination,
+      },
+      'origin': {
+        'address': origin,
+      },
+      if (intermediateLocations.isNotEmpty) 'intermediates': intermediates,
+      'travelMode': 'DRIVE',
+      'routingPreference': 'TRAFFIC_AWARE',
+      'routeModifiers': {
+        'avoidTolls': false,
+        'avoidHighways': false,
+        'avoidFerries': false
+      },
+      // "departureTime": "2023-10-15T15:01:23.045123456Z",
+    };
+
+    final uri = Uri.https(
+        'routes.googleapis.com', '/directions/v2:computeRoutes', uriParameters);
+
+    http.post(uri, body: jsonEncode(queryParameters)).then((value) {
       debugPrint(value.body);
       debugPrint(value.statusCode.toString());
+
       var json = jsonDecode(value.body);
-      var element = json["rows"][0]["elements"][0];
-      var time = element["duration"]
-          ["value"]; // duration_in_traffic is not always available
-      then(time);
+      var duration = json["routes"][0]["duration"];
+
+      var durationAsInt = int.parse(duration.replaceAll('s', ''));
+
+      then(durationAsInt);
     });
   }
 }

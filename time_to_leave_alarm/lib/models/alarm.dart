@@ -16,6 +16,11 @@ class Alarm {
   bool snooze;
   bool turnedOn;
   int androidAlarmId;
+  String intermediateLocation1;
+  String intermediateLocation2;
+  String intermediateLocation3;
+  String intermediateLocation4;
+  String intermediateLocation5;
 
   Alarm(
       {this.id,
@@ -34,7 +39,12 @@ class Alarm {
       this.vibrate = false,
       this.snooze = false,
       this.turnedOn = true,
-      this.androidAlarmId = 0});
+      this.androidAlarmId = 0,
+      this.intermediateLocation1 = '',
+      this.intermediateLocation2 = '',
+      this.intermediateLocation3 = '',
+      this.intermediateLocation4 = '',
+      this.intermediateLocation5 = ''});
 
   Alarm.fromMap(json)
       : this(
@@ -54,7 +64,12 @@ class Alarm {
             vibrate: json["vibrate"] == 0 ? false : true,
             snooze: json["snooze"] == 0 ? false : true,
             turnedOn: json["turned_on"] == 0 ? false : true,
-            androidAlarmId: json["android_alarm_id"]);
+            androidAlarmId: json["android_alarm_id"],
+            intermediateLocation1: json["intermediate_location_1"],
+            intermediateLocation2: json["intermediate_location_2"],
+            intermediateLocation3: json["intermediate_location_3"],
+            intermediateLocation4: json["intermediate_location_4"],
+            intermediateLocation5: json["intermediate_location_5"]);
 
   Map<String, dynamic> toMap() {
     return {
@@ -74,12 +89,47 @@ class Alarm {
       "vibrate": vibrate ? 1 : 0,
       "snooze": snooze ? 1 : 0,
       "turned_on": turnedOn ? 1 : 0,
-      "android_alarm_id": androidAlarmId
+      "android_alarm_id": androidAlarmId,
+      "intermediate_location_1": intermediateLocation1,
+      "intermediate_location_2": intermediateLocation2,
+      "intermediate_location_3": intermediateLocation3,
+      "intermediate_location_4": intermediateLocation4,
+      "intermediate_location_5": intermediateLocation5,
     };
   }
 
   @override
   bool operator ==(Object other) {
     return id == (other as Alarm).id;
+  }
+
+  countIntermediateLocations() { // This is beautiful
+    var count = 0;
+    if (intermediateLocation1.isNotEmpty) {
+      count++;
+    }
+    if (intermediateLocation2.isNotEmpty) {
+      count++;
+    }
+    if (intermediateLocation3.isNotEmpty) {
+      count++;
+    }
+    if (intermediateLocation4.isNotEmpty) {
+      count++;
+    }
+    if (intermediateLocation5.isNotEmpty) {
+      count++;
+    }
+    return count;
+  }
+
+  List<String> getIntermediateLocations() {
+    return [
+      intermediateLocation1,
+      intermediateLocation2,
+      intermediateLocation3,
+      intermediateLocation4,
+      intermediateLocation5
+    ];
   }
 }

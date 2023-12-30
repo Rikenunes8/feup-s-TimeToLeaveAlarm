@@ -57,14 +57,29 @@ class _AlarmCardState extends State<AlarmCard> {
               )
             ],
           ),
-          _address(Icons.circle_outlined, widget.alarm.origin),
+          _address(Icons.circle, widget.alarm.origin),
           const SizedBox(
             height: 5,
           ),
+          _intermediateAddresses(widget.alarm),
           _address(Icons.location_on_outlined, widget.alarm.destination),
         ],
       ),
     ));
+  }
+
+  _intermediateAddresses(Alarm alarm) {
+    final intermediateAddressesNotEmpty =
+        alarm.getIntermediateLocations().where((element) => element.isNotEmpty).toList();
+    return Column(
+      children: [
+        for (final address in intermediateAddressesNotEmpty)
+        Column(children:[
+          _address(Icons.circle_outlined, address),
+          SizedBox(height: 5)
+        ]),
+      ],
+    );
   }
 
   _address(IconData icon, String address) {

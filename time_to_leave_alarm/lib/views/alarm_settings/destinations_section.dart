@@ -1,44 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_address_tile.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
+import 'package:time_to_leave_alarm/components/add_intermediate_destination_button.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
+
 
 class DestinationsSection extends StatefulWidget {
   final DestinationsController controller;
+  final int maxIntermediateLocations = 5;
 
-  const DestinationsSection({Key? key, required this.controller}) : super(key: key);
+  const DestinationsSection({super.key, required this.controller});
 
   @override
   State<DestinationsSection> createState() => _DestinationsSectionState();
 }
 
 class _DestinationsSectionState extends State<DestinationsSection> {
+  addIntermediateLocation() {
+    if (!canAddIntermediateLocationButton()) {
+      // Show snackbar with message
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Please fill in all fields before adding a new intermediate location')));
+      return;
+    }
+
+    final intermediateController = TextEditingController();
+    widget.controller.intermediateControllers.add(intermediateController);
+
+    setState(() {});
+  }
+
+  removeIntermediateLocation(TextEditingController controller) {
+    widget.controller.intermediateControllers.remove(controller);
+    controller.dispose();
+    setState(() {});
+  }
+
+  bool anyIntermediateLocationIsEmpty() {
+    for (final controller in widget.controller.intermediateControllers) {
+      if (controller.text.isEmpty) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  canAddIntermediateLocationButton() {
+    return (widget.controller.intermediateControllers.length <= widget.maxIntermediateLocations &&
+        widget.controller.toController.text.isNotEmpty &&
+        widget.controller.fromController.text.isNotEmpty &&
+        !anyIntermediateLocationIsEmpty());
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlarmSettingsSection(sectionTitle: "Destinations", children: [
-      AlarmSettingsAddressTile(icon: Icons.my_location, hintText: "From", controller: widget.controller.fromController,),
-      AlarmSettingsAddressTile(icon: Icons.flag, hintText: "To", controller: widget.controller.toController,),
+      AlarmSettingsAddressTile(
+        icon: Icons.my_location,
+        hintText: "From",
+        controller: widget.controller.fromController,
+      ),
+      for (final controller in widget.controller.intermediateControllers)
+        AlarmSettingsAddressTile(
+          icon: Icons.circle_outlined,
+          hintText: "Intermediate",
+          controller: controller,
+          onClear: () => removeIntermediateLocation(controller),
+        ),
+      AlarmSettingsAddressTile(
+        icon: Icons.flag,
+        hintText: "To",
+        controller: widget.controller.toController,
+      ),
+      widget.controller.intermediateControllers.length >= widget.maxIntermediateLocations
+          ? const SizedBox()
+          :
+        AddIntermediateLocationButton(
+          icon: Icons.add_circle_outline, onPressed: addIntermediateLocation)
     ]);
   }
 }
 
 class DestinationsController {
+  final List<TextEditingController> intermediateControllers = [];
   final TextEditingController fromController = TextEditingController();
   final TextEditingController toController = TextEditingController();
 
   void dispose() {
     fromController.dispose();
+    for (final controller in intermediateControllers) {
+      controller.dispose();
+    }
     toController.dispose();
   }
 
   loadAlarm(Alarm alarm) {
     fromController.text = alarm.origin;
     toController.text = alarm.destination;
+    intermediateControllers.clear();
+    for (final intermediateLocation in alarm.getIntermediateLocations()) {
+      if (intermediateLocation.isNotEmpty) {
+        intermediateControllers.add(TextEditingController(text: intermediateLocation));
+      }
+    }
   }
 
   void setAlarm(Alarm alarm) {
     alarm.origin = fromController.text;
     alarm.destination = toController.text;
+    
+    getIntermediateLocation(int i) {
+      if (i < intermediateControllers.length) {
+        return intermediateControllers[i].text.toString();
+      } else {
+        return '';
+      }
+    }
+
+    alarm.intermediateLocation1 = getIntermediateLocation(0);
+    alarm.intermediateLocation2 = getIntermediateLocation(1);
+    alarm.intermediateLocation3 = getIntermediateLocation(2);
+    alarm.intermediateLocation4 = getIntermediateLocation(3);
+    alarm.intermediateLocation5 = getIntermediateLocation(4);
   }
 }

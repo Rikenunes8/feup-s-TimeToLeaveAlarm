@@ -57,7 +57,7 @@ class AutoCompleteTextField extends StatelessWidget {
         );
       },
 
-      isCrossBtnShown: true,
+      isCrossBtnShown: false,
       // default 600 ms ,
     );
   }

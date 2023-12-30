@@ -109,6 +109,10 @@ class _AlarmPageState extends State<AlarmPage> {
 
     calculateDistance(
         origin: origin,
+        intermediateLocations: destinationsController
+                .intermediateControllers
+                .map((e) => e.text.toString())
+                .toList(),
         destination: destination,
         then: (time) async {
           final newAlarm = alarm == null;
