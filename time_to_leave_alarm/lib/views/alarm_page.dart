@@ -80,6 +80,10 @@ class _AlarmPageState extends State<AlarmPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => calculateDistance(
             origin: destinationsController.fromController.text.toString(),
+            intermediateLocations: destinationsController
+                .intermediateControllers
+                .map((e) => e.text.toString())
+                .toList(),
             destination: destinationsController.toController.text.toString(),
             then: (time) async {
               final arrivalTimeString =

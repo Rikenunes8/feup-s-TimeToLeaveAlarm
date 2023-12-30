@@ -7,7 +7,8 @@ import 'package:http/http.dart' as http;
 calculateDistance(
     {required String origin,
     required String destination,
-    required Function(int) then}) {
+    required Function(int) then,
+    List<String> intermediateLocations = const []}) {
   if (googleDistanceAPIKey == '') {
     debugPrint('Google Distance API Key not configured. Using mock data');
     then(2342);
@@ -16,6 +17,14 @@ calculateDistance(
       'key': googleDistanceAPIKey,
       'fields': 'routes.distanceMeters,routes.duration',
     };
+
+    var intermediates = intermediateLocations.map((e) {
+      return {
+        'address': e,
+        'via': true,
+      };
+    }).toList();
+
     final queryParameters = {
       'destination': {
         'address': destination,
@@ -23,16 +32,9 @@ calculateDistance(
       'origin': {
         'address': origin,
       },
-      // 'intermediates': [
-      //   {
-      //     'location': {
-      //       'address': 'Faculdade de Engenharia da Universidade do Porto',
-      //     }
-      //    'via': true/false
-      //   }
-      // ],
-
+      if (intermediateLocations.isNotEmpty) 'intermediates': intermediates,
       'travelMode': 'DRIVE',
+      'routingPreference': 'TRAFFIC_AWARE',
       'routeModifiers': {
         'avoidTolls': false,
         'avoidHighways': false,
