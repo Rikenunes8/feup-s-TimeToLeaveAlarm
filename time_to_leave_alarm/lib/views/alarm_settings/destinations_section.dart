@@ -33,6 +33,12 @@ class DestinationsSection extends StatefulWidget {
 
 class _DestinationsSectionState extends State<DestinationsSection> {
   addIntermediateLocation() {
+    if (widget.controller.intermediateControllers.length > 5) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'You can only insert a maximum of 5 intermediate locations')));
+      return;
+    }
     if (!canAddIntermediateLocationButton()) {
       // Show snackbar with message
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
