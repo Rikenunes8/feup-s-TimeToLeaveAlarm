@@ -1,31 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_address_tile.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
+import 'package:time_to_leave_alarm/components/add_intermediate_destination_button.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
 
 
-class AddIntermediateLocationButton extends StatelessWidget {
-  final IconData icon;
-  final void Function()? onPressed;
-
-  const AddIntermediateLocationButton(
-      {super.key, required this.icon, this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(children: [
-      IconButton(onPressed: onPressed, icon: Icon(icon)),
-      const SizedBox(width: 5),
-      const Text("Add intermediate location"),
-    ]);
-  }
-}
-
 class DestinationsSection extends StatefulWidget {
   final DestinationsController controller;
+  final int maxIntermediateLocations = 5;
 
-  const DestinationsSection({Key? key, required this.controller})
-      : super(key: key);
+  const DestinationsSection({super.key, required this.controller});
 
   @override
   State<DestinationsSection> createState() => _DestinationsSectionState();
@@ -33,12 +17,6 @@ class DestinationsSection extends StatefulWidget {
 
 class _DestinationsSectionState extends State<DestinationsSection> {
   addIntermediateLocation() {
-    if (widget.controller.intermediateControllers.length > 5) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'You can only insert a maximum of 5 intermediate locations')));
-      return;
-    }
     if (!canAddIntermediateLocationButton()) {
       // Show snackbar with message
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -69,7 +47,7 @@ class _DestinationsSectionState extends State<DestinationsSection> {
   }
 
   canAddIntermediateLocationButton() {
-    return (widget.controller.intermediateControllers.length <= 5 &&
+    return (widget.controller.intermediateControllers.length <= widget.maxIntermediateLocations &&
         widget.controller.toController.text.isNotEmpty &&
         widget.controller.fromController.text.isNotEmpty &&
         !anyIntermediateLocationIsEmpty());
@@ -95,7 +73,10 @@ class _DestinationsSectionState extends State<DestinationsSection> {
         hintText: "To",
         controller: widget.controller.toController,
       ),
-      AddIntermediateLocationButton(
+      widget.controller.intermediateControllers.length >= widget.maxIntermediateLocations
+          ? const SizedBox()
+          :
+        AddIntermediateLocationButton(
           icon: Icons.add_circle_outline, onPressed: addIntermediateLocation)
     ]);
   }
