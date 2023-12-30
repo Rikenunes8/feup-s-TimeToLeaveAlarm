@@ -55,9 +55,19 @@ class _AlarmPageState extends State<AlarmPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+          actions: <Widget>[
+            args?.alarm != null
+                ? IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      context.read<AlarmProvider>().deleteAlarm(args!.alarm);
+                      Navigator.pop(context);
+                    },
+                  )
+                : Container(),
+          ]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(

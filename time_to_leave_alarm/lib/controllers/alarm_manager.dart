@@ -12,7 +12,7 @@ void setAlarmCallback(int id, Map<String, dynamic> params) {
       'android.intent.extra.alarm.HOUR': params['hour'],
       'android.intent.extra.alarm.MINUTES': params['minutes'],
       'android.intent.extra.alarm.SKIP_UI': true,
-      'android.intent.extra.alarm.MESSAGE': 'Time to Leave',
+      'android.intent.extra.alarm.MESSAGE': 'Time to Leave${params["name"].isEmpty ? '' : ' - ${params["name"]}'}',
     },
   );
   intent.launch();
@@ -31,6 +31,7 @@ setAlarm(Alarm alarm) async {
       params: {
         'hour': leaveDatetime.hour,
         'minutes': leaveDatetime.minute,
+        'name': alarm.name,
       });
 }
 
