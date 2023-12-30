@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/controllers/api/secrets.dart';
-import 'package:time_to_leave_alarm/controllers/api/requests/address_to_coordinates.dart';
 import 'package:http/http.dart' as http;
 
 calculateDistance(
@@ -41,18 +40,20 @@ calculateDistance(
       },
       // "departureTime": "2023-10-15T15:01:23.045123456Z",
     };
-    // final uri = Uri.https('maps.googleapis.com',
-    //     '/maps/api/distancematrix/json', queryParameters);
+
     final uri = Uri.https(
         'routes.googleapis.com', '/directions/v2:computeRoutes', uriParameters);
-    debugPrint(uri.toString());
+
     http.post(uri, body: jsonEncode(queryParameters)).then((value) {
       debugPrint(value.body);
       debugPrint(value.statusCode.toString());
-      var json = jsonDecode(value.body);
-      var time = json["routes"][0]["duration"];
 
-      then(time);
+      var json = jsonDecode(value.body);
+      var duration = json["routes"][0]["duration"];
+
+      var durationAsInt = int.parse(duration.replaceAll('s', ''));
+
+      then(durationAsInt);
     });
   }
 }
