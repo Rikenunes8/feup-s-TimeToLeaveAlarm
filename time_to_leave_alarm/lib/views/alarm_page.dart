@@ -99,13 +99,26 @@ class _AlarmPageState extends State<AlarmPage> {
 
               final androidAlarmId = Random().nextInt(2147483647);
 
+              getIntermediateLocation(int i) {
+                if (i < destinationsController.intermediateControllers.length) {
+                  return destinationsController.intermediateControllers[i].text.toString();
+                } else {
+                  return '';
+                }
+              }
+
               final alarm = Alarm(
                   arrivalTimeString,
                   leaveTimeString,
                   destinationsController.fromController.text.toString(),
                   destinationsController.toController.text.toString(),
                   mode: transportController.mean.toString(), // TODO this is not right
-                  androidAlarmId: androidAlarmId);
+                  androidAlarmId: androidAlarmId,
+                  intermediateLocation1: getIntermediateLocation(0),
+                  intermediateLocation2: getIntermediateLocation(1),
+                  intermediateLocation3: getIntermediateLocation(2),
+                  intermediateLocation4: getIntermediateLocation(3),
+                  intermediateLocation5: getIntermediateLocation(4));
               context.read<AlarmProvider>().addAlarm(alarm);
 
               Navigator.pop(context);

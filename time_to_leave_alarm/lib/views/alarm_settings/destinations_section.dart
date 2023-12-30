@@ -63,7 +63,7 @@ class _DestinationsSectionState extends State<DestinationsSection> {
   }
 
   canAddIntermediateLocationButton() {
-    return (widget.controller.intermediateControllers.length < 10 &&
+    return (widget.controller.intermediateControllers.length <= 5 &&
         widget.controller.toController.text.isNotEmpty &&
         widget.controller.fromController.text.isNotEmpty &&
         !anyIntermediateLocationIsEmpty());
@@ -112,5 +112,11 @@ class DestinationsController {
   loadAlarm(Alarm alarm) {
     fromController.text = alarm.origin;
     toController.text = alarm.destination;
+    intermediateControllers.clear();
+    for (final intermediateLocation in alarm.getIntermediateLocations()) {
+      if (intermediateLocation.isNotEmpty) {
+        intermediateControllers.add(TextEditingController(text: intermediateLocation));
+      }
+    }
   }
 }

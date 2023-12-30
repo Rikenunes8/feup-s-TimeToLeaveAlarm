@@ -15,6 +15,11 @@ class DatabaseManager {
   static const String modeCol = "mode";
   static const String originCol = "origin";
   static const String destinationCol = "destination";
+  static const String intermediateLocationCol1 = "intermediate_location_1";
+  static const String intermediateLocationCol2 = "intermediate_location_2";
+  static const String intermediateLocationCol3 = "intermediate_location_3";
+  static const String intermediateLocationCol4 = "intermediate_location_4";
+  static const String intermediateLocationCol5 = "intermediate_location_5";
   static const String periodCol = "period";
   static const String periodDataCol = "period_data";
   static const String turnedOnCol = "turned_on";
@@ -42,7 +47,7 @@ class DatabaseManager {
     });
   }
 
-  createAlarmsTable(Database db) async {
+  createAlarmsTable(Database db) async { // TODO: Add a table for locations that has many to one relationship with alarms
     await db.execute('''
       CREATE TABLE $alarmsTable (
         $idCol INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,6 +57,11 @@ class DatabaseManager {
         $modeCol TEXT,
         $originCol TEXT,
         $destinationCol TEXT,
+        $intermediateLocationCol1 TEXT,
+        $intermediateLocationCol2 TEXT,
+        $intermediateLocationCol3 TEXT,
+        $intermediateLocationCol4 TEXT,
+        $intermediateLocationCol5 TEXT,
         $periodCol TEXT,
         $periodDataCol TEXT,
         $turnedOnCol INTEGER,
