@@ -1,6 +1,5 @@
-import 'package:date_field/date_field.dart';
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/controllers/api/requests/calculate_distance.dart';
 import 'package:time_to_leave_alarm/controllers/api/widgets/auto_complete_text_field.dart';
@@ -14,19 +13,26 @@ import 'package:time_to_leave_alarm/views/alarm_settings/destinations_section.da
 import 'package:time_to_leave_alarm/views/alarm_settings/schedule_section.dart';
 import 'package:time_to_leave_alarm/views/alarm_settings/transport_section.dart';
 
-class CreatePage extends StatefulWidget {
+class AlarmPageArguments {
+  final Alarm alarm;
+
+  AlarmPageArguments(this.alarm);
+}
+
+class AlarmPage extends StatefulWidget {
   static const route = '/create';
 
-  const CreatePage({super.key, required this.title});
+  const AlarmPage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<CreatePage> createState() => _CreatePageState();
+  State<AlarmPage> createState() => _AlarmPageState();
 }
 
-class _CreatePageState extends State<CreatePage> {
-  final DestinationsController destinationsController = DestinationsController();
+class _AlarmPageState extends State<AlarmPage> {
+  final DestinationsController destinationsController =
+      DestinationsController();
   final ScheduleController scheduleController = ScheduleController();
   final TransportController transportController = TransportController();
   final AlarmController alarmController = AlarmController();
@@ -40,6 +46,10 @@ class _CreatePageState extends State<CreatePage> {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as AlarmPageArguments?;
+    if (args != null) {
+      destinationsController.loadAlarm(args.alarm);
+    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -71,19 +81,29 @@ class _CreatePageState extends State<CreatePage> {
         onPressed: () => calculateDistance(
             origin: destinationsController.fromController.text.toString(),
             destination: destinationsController.toController.text.toString(),
-            then: (time) {
-              final arrivalTime = formatDateTime(scheduleController.dateTime!);
-              final leaveTime = scheduleController.dateTime != null
-                  ? formatDateTime(scheduleController.dateTime!.subtract(Duration(seconds: time)))
-                  : arrivalTime;
+            then: (time) async {
+              final arrivalTimeString =
+                  formatDateTime(scheduleController.dateTime!);
+              final leaveDatetime = scheduleController.dateTime != null
+                  ? scheduleController.dateTime!
+                      .subtract(Duration(seconds: time))
+                  : scheduleController.dateTime;
+              final leaveTimeString = scheduleController.dateTime != null
+                  ? formatDateTime(scheduleController.dateTime!
+                      .subtract(Duration(seconds: time)))
+                  : arrivalTimeString;
+
+              final androidAlarmId = Random().nextInt(2147483647);
+
               final alarm = Alarm(
-                  arrivalTime,
-                  leaveTime,
+                  arrivalTimeString,
+                  leaveTimeString,
                   destinationsController.fromController.text.toString(),
                   destinationsController.toController.text.toString(),
-                  mode: transportController.mean.toString()
-              );
+                  mode: transportController.mean.toString(), // TODO this is not right
+                  androidAlarmId: androidAlarmId);
               context.read<AlarmProvider>().addAlarm(alarm);
+
               Navigator.pop(context);
             }),
         child: const Icon(Icons.check),

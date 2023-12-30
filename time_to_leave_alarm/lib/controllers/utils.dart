@@ -8,11 +8,10 @@ String formatTime(DateTime dateTime) {
   return DateFormat('HH:mm').format(dateTime);
 }
 
-DateTime stringToDateTime(dateTime){
+DateTime stringToDateTime(dateTime) {
   return DateFormat('dd/MM/yyyy HH:mm').parse(dateTime);
 }
 
 String timeFromDateTime(String dateTime) {
   return formatTime(stringToDateTime(dateTime));
 }
-

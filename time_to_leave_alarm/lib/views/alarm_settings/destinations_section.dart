@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_address_tile.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
+import 'package:time_to_leave_alarm/models/alarm.dart';
 
 class DestinationsSection extends StatefulWidget {
   final DestinationsController controller;
@@ -29,5 +30,10 @@ class DestinationsController {
   void dispose() {
     fromController.dispose();
     toController.dispose();
+  }
+
+  loadAlarm(Alarm alarm) {
+    fromController.text = alarm.origin;
+    toController.text = alarm.destination;
   }
 }
