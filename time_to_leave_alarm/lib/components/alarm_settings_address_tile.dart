@@ -7,34 +7,21 @@ class AlarmSettingsAddressTile extends StatelessWidget {
   final String hintText;
   final IconData icon;
   final TextEditingController controller;
-  final bool removable;
-  final void Function()? onRemove;
+  final void Function()? onClear;
 
   const AlarmSettingsAddressTile(
-      {Key? key, this.hintText = "", required this.icon, required this.controller, this.removable = false, this.onRemove = null})
-      : super(key: key);
+      {super.key, this.hintText = "", required this.icon, required this.controller, this.onClear});
 
   Widget _buildAddressTile(BuildContext context) {
     return Row(
       children: [
         Icon(icon),
         const SizedBox(width: 5),
-        Expanded(child: AutoCompleteTextField(controller: controller, hintText: hintText))
+        Expanded(child: AutoCompleteTextField(controller: controller, hintText: hintText)),
+        IconButton(onPressed: () => {controller.clear(), onClear!()}, icon: const Icon(Icons.clear)),
+        MyLocationButton(then: (address) => {controller.text = address}, iconSize: 20),
+        MapLocationButton(then: (address) => {controller.text = address}, iconSize: 20),
       ]
-    );
-  }
-
-  Widget _buildAdressButtons(BuildContext) {
-    return Row(children: [
-      MyLocationButton(then: (address) => {controller.text = address}, iconSize: 20),
-      MapLocationButton(then: (address) => {controller.text = address}, iconSize: 20),
-      if (removable)
-        IconButton(
-          onPressed: onRemove,
-          icon: const Icon(Icons.clear),
-        ),
-    ],
-    mainAxisAlignment: MainAxisAlignment.end
     );
   }
 
@@ -44,7 +31,6 @@ class AlarmSettingsAddressTile extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildAddressTile(context),
-        _buildAdressButtons(context),
       ],
       
     );

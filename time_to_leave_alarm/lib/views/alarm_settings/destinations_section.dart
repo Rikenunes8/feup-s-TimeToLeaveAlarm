@@ -82,8 +82,7 @@ class _DestinationsSectionState extends State<DestinationsSection> {
           icon: Icons.circle_outlined,
           hintText: "Intermediate",
           controller: controller,
-          removable: true,
-          onRemove: () => removeIntermediateLocation(controller),
+          onClear: () => removeIntermediateLocation(controller),
         ),
       AlarmSettingsAddressTile(
         icon: Icons.flag,
