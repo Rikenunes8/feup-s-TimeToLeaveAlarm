@@ -1,27 +1,43 @@
 class Alarm {
-  final int? id;
-  final String name;
-  final String arriveTime;
-  final String leaveTime;
-  final String mode;
-  final String origin;
-  final String destination;
-  final String intermediateLocation1;
-  final String intermediateLocation2;
-  final String intermediateLocation3;
-  final String intermediateLocation4;
-  final String intermediateLocation5;
-  final String period;
-  final String periodData;
-  final int androidAlarmId;
+  int? id;
+  String origin;
+  String destination;
+  String leaveTime;
+  String arriveTime;
+  bool period;
+  String periodData;
+  String mode;
+  bool tolls;
+  bool highways;
+  bool ferries;
+  String name;
+  String ringtone;
+  bool vibrate;
+  bool snooze;
   bool turnedOn;
+  int androidAlarmId;
+  String intermediateLocation1;
+  String intermediateLocation2;
+  String intermediateLocation3;
+  String intermediateLocation4;
+  String intermediateLocation5;
 
-  Alarm(this.arriveTime, this.leaveTime, this.origin, this.destination,
+  Alarm(
       {this.id,
-      this.name = '',
-      this.mode = 'driving',
-      this.period = '',
+      this.origin = '',
+      this.destination = '',
+      this.leaveTime = '',
+      this.arriveTime = '',
+      this.period = false,
       this.periodData = '',
+      this.mode = 'driving',
+      this.tolls = false,
+      this.highways = false,
+      this.ferries = false,
+      this.name = '',
+      this.ringtone = '',
+      this.vibrate = false,
+      this.snooze = false,
       this.turnedOn = true,
       this.androidAlarmId = 0,
       this.intermediateLocation1 = '',
@@ -31,15 +47,24 @@ class Alarm {
       this.intermediateLocation5 = ''});
 
   Alarm.fromMap(json)
-      : this(json["arrive_time"], json["leave_time"], json["origin"],
-            json["destination"],
+      : this(
             id: json["id"],
-            name: json["name"],
-            mode: json["mode"],
-            period: json["period"],
+            origin: json["origin"],
+            destination: json["destination"],
+            leaveTime: json["leave_time"],
+            arriveTime: json["arrive_time"],
+            period: json["period"] == 0 ? false : true,
             periodData: json["period_data"],
-            androidAlarmId: json["android_alarm_id"],
+            mode: json["mode"],
+            tolls: json["tolls"] == 0 ? false : true,
+            highways: json["highways"] == 0 ? false : true,
+            ferries: json["ferries"] == 0 ? false : true,
+            name: json["name"],
+            ringtone: json["name"],
+            vibrate: json["vibrate"] == 0 ? false : true,
+            snooze: json["snooze"] == 0 ? false : true,
             turnedOn: json["turned_on"] == 0 ? false : true,
+            androidAlarmId: json["android_alarm_id"],
             intermediateLocation1: json["intermediate_location_1"],
             intermediateLocation2: json["intermediate_location_2"],
             intermediateLocation3: json["intermediate_location_3"],
@@ -49,14 +74,20 @@ class Alarm {
   Map<String, dynamic> toMap() {
     return {
       "id": id,
-      "name": name,
-      "arrive_time": arriveTime,
-      "leave_time": leaveTime,
-      "mode": mode,
       "origin": origin,
       "destination": destination,
-      "period": period,
+      "leave_time": leaveTime,
+      "arrive_time": arriveTime,
+      "period": period ? 1 : 0,
       "period_data": periodData,
+      "mode": mode,
+      "tolls": tolls ? 1 : 0,
+      "highways": highways ? 1 : 0,
+      "ferries": ferries ? 1 : 0,
+      "name": name,
+      "ringtone": ringtone,
+      "vibrate": vibrate ? 1 : 0,
+      "snooze": snooze ? 1 : 0,
       "turned_on": turnedOn ? 1 : 0,
       "android_alarm_id": androidAlarmId,
       "intermediate_location_1": intermediateLocation1,

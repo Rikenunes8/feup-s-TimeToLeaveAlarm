@@ -102,6 +102,12 @@ class _AlarmCardState extends State<AlarmCard> {
     switch (mode) {
       case 'driving':
         return Icons.directions_car_outlined;
+      case 'transit':
+        return Icons.directions_transit_outlined;
+      case 'walking':
+        return Icons.directions_walk_outlined;
+      case 'cycling':
+        return Icons.directions_bike;
     }
     return null;
   }

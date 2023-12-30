@@ -31,8 +31,7 @@ class AlarmPage extends StatefulWidget {
 }
 
 class _AlarmPageState extends State<AlarmPage> {
-  final DestinationsController destinationsController =
-      DestinationsController();
+  final DestinationsController destinationsController = DestinationsController();
   final ScheduleController scheduleController = ScheduleController();
   final TransportController transportController = TransportController();
   final AlarmController alarmController = AlarmController();
@@ -49,13 +48,26 @@ class _AlarmPageState extends State<AlarmPage> {
     final args = ModalRoute.of(context)?.settings.arguments as AlarmPageArguments?;
     if (args != null) {
       destinationsController.loadAlarm(args.alarm);
+      scheduleController.loadAlarm(args.alarm);
+      transportController.loadAlarm(args.alarm);
+      alarmController.loadAlarm(args.alarm);
     }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+          actions: <Widget>[
+            args?.alarm != null
+                ? IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      context.read<AlarmProvider>().deleteAlarm(args!.alarm);
+                      Navigator.pop(context);
+                    },
+                  )
+                : Container(),
+          ]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -72,60 +84,61 @@ class _AlarmPageState extends State<AlarmPage> {
             ),
             AlarmSection(controller: alarmController),
             const SizedBox(
-              height: 100,
+              height: 50,
             )
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => calculateDistance(
-            origin: destinationsController.fromController.text.toString(),
-            intermediateLocations: destinationsController
-                .intermediateControllers
-                .map((e) => e.text.toString())
-                .toList(),
-            destination: destinationsController.toController.text.toString(),
-            then: (time) async {
-              final arrivalTimeString =
-                  formatDateTime(scheduleController.dateTime!);
-              final leaveDatetime = scheduleController.dateTime != null
-                  ? scheduleController.dateTime!
-                      .subtract(Duration(seconds: time))
-                  : scheduleController.dateTime;
-              final leaveTimeString = scheduleController.dateTime != null
-                  ? formatDateTime(scheduleController.dateTime!
-                      .subtract(Duration(seconds: time)))
-                  : arrivalTimeString;
-
-              final androidAlarmId = Random().nextInt(2147483647);
-
-              getIntermediateLocation(int i) {
-                if (i < destinationsController.intermediateControllers.length) {
-                  return destinationsController.intermediateControllers[i].text.toString();
-                } else {
-                  return '';
-                }
-              }
-
-              final alarm = Alarm(
-                  arrivalTimeString,
-                  leaveTimeString,
-                  destinationsController.fromController.text.toString(),
-                  destinationsController.toController.text.toString(),
-                  mode: transportController.mean.toString(), // TODO this is not right
-                  androidAlarmId: androidAlarmId,
-                  intermediateLocation1: getIntermediateLocation(0),
-                  intermediateLocation2: getIntermediateLocation(1),
-                  intermediateLocation3: getIntermediateLocation(2),
-                  intermediateLocation4: getIntermediateLocation(3),
-                  intermediateLocation5: getIntermediateLocation(4));
-              context.read<AlarmProvider>().addAlarm(alarm);
-
-              Navigator.pop(context);
-            }),
+        onPressed: () => createOrUpdateAlarm(args?.alarm),
         child: const Icon(Icons.check),
       ),
     );
+  }
+
+  createOrUpdateAlarm(Alarm? alarm) {
+    final origin = destinationsController.fromController.text;
+    final destination = destinationsController.toController.text;
+    final arrivalTime = scheduleController.dateTime;
+    if (origin.isEmpty || destination.isEmpty || arrivalTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Required fields empty"),
+      ));
+      return;
+    }
+
+    calculateDistance(
+        origin: origin,
+        intermediateLocations: destinationsController
+                .intermediateControllers
+                .map((e) => e.text.toString())
+                .toList(),
+        destination: destination,
+        then: (time) async {
+          final newAlarm = alarm == null;
+          final leaveTimeString = formatDateTime(arrivalTime.subtract(Duration(seconds: time)));
+
+          if (newAlarm) {
+            final androidAlarmId = Random().nextInt(2147483647);
+            alarm = Alarm(leaveTime: leaveTimeString, androidAlarmId: androidAlarmId);
+          } else {
+            alarm!.leaveTime = leaveTimeString;
+            alarm!.turnedOn = true;
+          }
+
+          destinationsController.setAlarm(alarm!);
+          scheduleController.setAlarm(alarm!);
+          transportController.setAlarm(alarm!);
+          alarmController.setAlarm(alarm!);
+
+          if (newAlarm) {
+            context.read<AlarmProvider>().addAlarm(alarm!);
+          } else {
+            context.read<AlarmProvider>().updateAlarm(alarm!);
+          }
+
+          Navigator.pop(context);
+        });
   }
 
   placesAutoCompleteTextField(String label, TextEditingController controller) {

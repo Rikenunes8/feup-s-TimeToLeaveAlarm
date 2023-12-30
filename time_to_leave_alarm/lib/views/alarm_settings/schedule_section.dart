@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_icon_tile.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
 import 'package:time_to_leave_alarm/components/week_days.dart';
+import 'package:time_to_leave_alarm/controllers/utils.dart';
+import 'package:time_to_leave_alarm/models/alarm.dart';
 
 class ScheduleSection extends StatefulWidget {
   final ScheduleController controller;
@@ -57,7 +59,13 @@ class _ScheduleSectionState extends State<ScheduleSection> {
               widget.controller.repeat
                   ? WeekDaysChips(selected: widget.controller.repeatValues, callback: (weekDay) {
                     setState(() {
-                      var selectList = widget.controller.repeatValues.split(",");
+                      late List<String> selectList;
+                      if (widget.controller.repeatValues.isEmpty) {
+                        selectList = [];
+                      } else {
+                        selectList = widget.controller.repeatValues.split(",");
+                      }
+
                       if (selectList.contains(weekDay.toString())) {
                         selectList.remove(weekDay.toString());
                       } else {
@@ -77,4 +85,16 @@ class ScheduleController {
   DateTime? dateTime;
   bool repeat = false;
   String repeatValues = "";
+
+  void loadAlarm(Alarm alarm) {
+    dateTime = stringToDateTime(alarm.arriveTime);
+    repeat = alarm.period;
+    repeatValues = alarm.periodData;
+  }
+
+  void setAlarm(Alarm alarm) {
+    alarm.arriveTime = formatDateTime(dateTime!);
+    alarm.period = repeat;
+    alarm.periodData = repeatValues;
+  }
 }

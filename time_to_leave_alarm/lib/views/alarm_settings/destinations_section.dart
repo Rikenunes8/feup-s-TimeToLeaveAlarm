@@ -119,4 +119,23 @@ class DestinationsController {
       }
     }
   }
+
+  void setAlarm(Alarm alarm) {
+    alarm.origin = fromController.text;
+    alarm.destination = toController.text;
+    
+    getIntermediateLocation(int i) {
+      if (i < intermediateControllers.length) {
+        return intermediateControllers[i].text.toString();
+      } else {
+        return '';
+      }
+    }
+
+    alarm.intermediateLocation1 = getIntermediateLocation(0);
+    alarm.intermediateLocation2 = getIntermediateLocation(1);
+    alarm.intermediateLocation3 = getIntermediateLocation(2);
+    alarm.intermediateLocation4 = getIntermediateLocation(3);
+    alarm.intermediateLocation5 = getIntermediateLocation(4);
+  }
 }

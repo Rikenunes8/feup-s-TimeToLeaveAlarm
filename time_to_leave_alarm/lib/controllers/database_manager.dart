@@ -9,10 +9,8 @@ class DatabaseManager {
 
   static const String alarmsTable = "Alarms";
   static const String idCol = "id";
-  static const String nameCol = "name";
   static const String arriveTimeCol = "arrive_time";
   static const String leaveTimeCol = "leave_time";
-  static const String modeCol = "mode";
   static const String originCol = "origin";
   static const String destinationCol = "destination";
   static const String intermediateLocationCol1 = "intermediate_location_1";
@@ -22,6 +20,14 @@ class DatabaseManager {
   static const String intermediateLocationCol5 = "intermediate_location_5";
   static const String periodCol = "period";
   static const String periodDataCol = "period_data";
+  static const String modeCol = "mode";
+  static const String tollsCol = "tolls";
+  static const String highwaysCol = "highways";
+  static const String ferriesCol = "ferries";
+  static const String nameCol = "name";
+  static const String ringtoneCol = "ringtone";
+  static const String vibrateCol = "vibrate";
+  static const String snoozeCol = "snooze";
   static const String turnedOnCol = "turned_on";
   static const String androidAlarmIdCol = "android_alarm_id";
 
@@ -37,7 +43,7 @@ class DatabaseManager {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, databaseFilename);
 
-    return openDatabase(path, version: 2, onCreate: (db, version) async {
+    return openDatabase(path, version: 3, onCreate: (db, version) async {
       await createAlarmsTable(db);
       await seedDatabase(db);
     }, onUpgrade: (db, oldVersion, newVersion) async {
@@ -51,10 +57,6 @@ class DatabaseManager {
     await db.execute('''
       CREATE TABLE $alarmsTable (
         $idCol INTEGER PRIMARY KEY AUTOINCREMENT,
-        $nameCol TEXT,
-        $arriveTimeCol TEXT,
-        $leaveTimeCol TEXT,
-        $modeCol TEXT,
         $originCol TEXT,
         $destinationCol TEXT,
         $intermediateLocationCol1 TEXT,
@@ -62,8 +64,18 @@ class DatabaseManager {
         $intermediateLocationCol3 TEXT,
         $intermediateLocationCol4 TEXT,
         $intermediateLocationCol5 TEXT,
-        $periodCol TEXT,
+        $leaveTimeCol TEXT,
+        $arriveTimeCol TEXT,
+        $periodCol INTEGER,
         $periodDataCol TEXT,
+        $modeCol TEXT,
+        $tollsCol INTEGER,
+        $highwaysCol INTEGER,
+        $ferriesCol INTEGER,
+        $nameCol TEXT,
+        $ringtoneCol TEXT,
+        $vibrateCol INTEGER,
+        $snoozeCol INTEGER,
         $turnedOnCol INTEGER,
         $androidAlarmIdCol INTEGER
       );
@@ -83,8 +95,7 @@ class DatabaseManager {
 
   Future<void> updateAlarm(Alarm alarm) async {
     final db = await database;
-    await db.update(alarmsTable, alarm.toMap(),
-        where: '$idCol = ?', whereArgs: [alarm.id]);
+    await db.update(alarmsTable, alarm.toMap(), where: '$idCol = ?', whereArgs: [alarm.id]);
   }
 
   Future<void> deleteAlarm(int id) async {

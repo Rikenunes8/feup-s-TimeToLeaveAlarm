@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_switch_tile.dart';
 import 'package:time_to_leave_alarm/components/transportation_mean_card.dart';
+import 'package:time_to_leave_alarm/models/alarm.dart';
 
 enum TransportMean { driving, transit, walking, cycling }
+
+extension ParseToString on TransportMean {
+  String toShortString() {
+    return toString().split('.').last;
+  }
+}
 
 class TransportSection extends StatefulWidget {
   final TransportController controller;
@@ -15,8 +22,6 @@ class TransportSection extends StatefulWidget {
 }
 
 class _TransportSectionState extends State<TransportSection> {
-  TransportMean selectedMean = TransportMean.driving;
-
   @override
   Widget build(BuildContext context) {
     return AlarmSettingsSection(sectionTitle: "Transport", children: [
@@ -27,28 +32,54 @@ class _TransportSectionState extends State<TransportSection> {
           TransportationMeanCard(
               icon: Icons.directions_car,
               text: "Driving",
-              selected: selectedMean == TransportMean.driving,
-              callback: () => setState(() => selectedMean = TransportMean.driving)),
+              selected: widget.controller.mean == TransportMean.driving,
+              callback: () => setState(() => widget.controller.mean = TransportMean.driving)),
           TransportationMeanCard(
               icon: Icons.directions_transit,
               text: "Transit",
-              selected: selectedMean == TransportMean.transit,
-              callback: () => setState(() => selectedMean = TransportMean.transit)),
+              selected: widget.controller.mean == TransportMean.transit,
+              callback: () => setState(() => widget.controller.mean = TransportMean.transit)),
           TransportationMeanCard(
               icon: Icons.directions_walk,
               text: "Walking",
-              selected: selectedMean == TransportMean.walking,
-              callback: () => setState(() => selectedMean = TransportMean.walking)),
+              selected: widget.controller.mean == TransportMean.walking,
+              callback: () => setState(() => widget.controller.mean = TransportMean.walking)),
           TransportationMeanCard(
               icon: Icons.directions_bike,
               text: "Cycling",
-              selected: selectedMean == TransportMean.cycling,
-              callback: () => setState(() => selectedMean = TransportMean.cycling)),
+              selected: widget.controller.mean == TransportMean.cycling,
+              callback: () => setState(() => widget.controller.mean = TransportMean.cycling)),
         ],
       ),
-      const AlarmSettingsSwitchTile(icon: Icons.currency_bitcoin, text: "Tolls"),
-      const AlarmSettingsSwitchTile(icon: Icons.directions, text: "Highways"),
-      const AlarmSettingsSwitchTile(icon: Icons.directions_ferry, text: "Ferries")
+      AlarmSettingsSwitchTile(
+        icon: Icons.currency_bitcoin,
+        text: "Tolls",
+        initial: widget.controller.tolls,
+        onChanged: (v) {
+          setState(() {
+            widget.controller.tolls = v;
+          });
+        },
+      ),
+      AlarmSettingsSwitchTile(
+        icon: Icons.directions,
+        text: "Highways",
+        initial: widget.controller.highways,
+        onChanged: (v) {
+          setState(() {
+            widget.controller.highways = v;
+          });
+        },
+      ),
+      AlarmSettingsSwitchTile(
+          icon: Icons.directions_ferry,
+          text: "Ferries",
+          initial: widget.controller.ferries,
+          onChanged: (v) {
+            setState(() {
+              widget.controller.ferries = v;
+            });
+          }),
     ]);
   }
 }
@@ -58,4 +89,18 @@ class TransportController {
   bool highways = false;
   bool ferries = false;
   TransportMean mean = TransportMean.driving;
+
+  void loadAlarm(Alarm alarm) {
+    mean = TransportMean.values.firstWhere((e) => e.toString() == 'TransportMean.${alarm.mode}');
+    tolls = alarm.tolls;
+    highways = alarm.highways;
+    ferries = alarm.ferries;
+  }
+
+  void setAlarm(Alarm alarm) {
+    alarm.tolls = tolls;
+    alarm.highways = highways;
+    alarm.ferries = ferries;
+    alarm.mode = mean.toShortString();
+  }
 }
