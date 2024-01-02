@@ -23,7 +23,7 @@ class _AlarmSettingsSectionState extends State<AlarmSettingsSection> {
           width: double.infinity,
           child: Card(
               child: Padding(
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: widget.children,

@@ -26,7 +26,7 @@ class _TransportSectionState extends State<TransportSection> {
     return Column(
       children: [
         AlarmSettingsSwitchTile(
-          icon: Icons.currency_bitcoin,
+          icon: Icons.attach_money,
           text: "Tolls",
           initial: widget.controller.tolls,
           onChanged: (v) {

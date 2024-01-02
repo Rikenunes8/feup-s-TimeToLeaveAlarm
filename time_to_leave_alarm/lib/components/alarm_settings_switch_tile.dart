@@ -30,7 +30,7 @@ class _AlarmSettingsSwitchTileState extends State<AlarmSettingsSwitchTile> {
         Expanded(
             child: Text(
           widget.text,
-          style: const TextStyle(fontSize: 16, color: Colors.black38, fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w400),
         )),
         Switch(value: value, onChanged: widget.onChanged)
       ],

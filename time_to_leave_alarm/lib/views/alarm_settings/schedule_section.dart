@@ -28,6 +28,8 @@ class _ScheduleSectionState extends State<ScheduleSection> {
                   hintText: 'Select arrival time',
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
+                  hintStyle: TextStyle(fontSize: 16, color: Colors.black38, fontWeight: FontWeight.w400),
+                  labelStyle: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w400)
                 ),
                 selectedDate: widget.controller.dateTime,
                 onDateSelected: (DateTime value) {
@@ -53,7 +55,10 @@ class _ScheduleSectionState extends State<ScheduleSection> {
                 },
                 child: Text(
                   widget.controller.repeat ? "Repeat" : "Does not repeat",
-                  style: const TextStyle(fontSize: 16, color: Colors.black38),
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400),
                 ),
               ),
               widget.controller.repeat

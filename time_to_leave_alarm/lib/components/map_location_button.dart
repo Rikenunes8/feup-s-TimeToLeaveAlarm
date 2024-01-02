@@ -21,11 +21,12 @@ class MapLocationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      padding: const EdgeInsets.all(0),
-      iconSize: iconSize,
-      onPressed: () => _onPressedMapButton(context),
-      icon: const Icon(Icons.map),
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: GestureDetector(
+        onTap: () => _onPressedMapButton(context),
+        child: Icon(Icons.map, size: iconSize, color: Theme.of(context).primaryColor)
+      )
     );
   }
 }

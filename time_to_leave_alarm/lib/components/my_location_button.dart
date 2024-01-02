@@ -9,7 +9,6 @@ class MyLocationButton extends StatelessWidget {
   final Function(String) then;
   final double iconSize;
 
-
   // Shamelessly stolen from https://medium.com/@fernnandoptr/how-to-get-users-current-location-address-in-flutter-geolocator-geocoding-be563ad6f66a
   Future<bool> _handleLocationPermission(BuildContext context) async {
     bool serviceEnabled;
@@ -56,11 +55,13 @@ class MyLocationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-        padding: const EdgeInsets.all(2),
-        iconSize: iconSize,
-        onPressed: () => _onPressedLocationButton(context),
-        icon: const Icon(Icons.my_location),
+    return Padding(
+      padding: const EdgeInsets.only(left: 5),
+      child: GestureDetector(
+        onTap: () => _onPressedLocationButton(context),
+        child: Icon(Icons.location_on,
+            size: iconSize, color: Theme.of(context).primaryColor),
+      ),
     );
   }
 }

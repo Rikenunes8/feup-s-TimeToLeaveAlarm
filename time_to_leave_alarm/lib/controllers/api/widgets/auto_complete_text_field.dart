@@ -4,10 +4,11 @@ import 'package:google_places_flutter/model/prediction.dart';
 import 'package:time_to_leave_alarm/controllers/api/secrets.dart';
 
 class AutoCompleteTextField extends StatelessWidget {
-  const AutoCompleteTextField({super.key, required this.controller, required this.hintText});
+  const AutoCompleteTextField({super.key, required this.controller, required this.hintText, this.textStyle});
 
   final TextEditingController controller;
   final String hintText;
+  final TextStyle? textStyle;
 
   Widget buildMock(BuildContext context) {
     return TextField(
@@ -16,11 +17,14 @@ class AutoCompleteTextField extends StatelessWidget {
           hintText: hintText,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
-        ));
+        ),
+        style: textStyle
+    );
   }
 
   Widget buildApi(BuildContext context) {
     return GooglePlaceAutoCompleteTextField(
+      textStyle: textStyle ?? const TextStyle(),
       boxDecoration: const BoxDecoration(),
       textEditingController: controller,
       googleAPIKey: googleAutocompleteAPIKey,

@@ -36,6 +36,12 @@ class _AlarmPageState extends State<AlarmPage> {
   final TransportController transportController = TransportController();
   final AlarmController alarmController = AlarmController();
 
+  _AlarmPageState() {
+    destinationsController.setOnChange(() => setState(() {
+      destinationsController.updateControllers();
+    }));
+  }
+
   @override
   void dispose() {
     destinationsController.dispose();

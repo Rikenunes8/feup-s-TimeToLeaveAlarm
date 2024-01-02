@@ -1,57 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_address_tile.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
-import 'package:time_to_leave_alarm/components/add_intermediate_destination_button.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
 
-
-class DestinationsSection extends StatefulWidget {
+class DestinationsSection extends StatelessWidget {
   final DestinationsController controller;
-  final int maxIntermediateLocations = 5;
 
   const DestinationsSection({super.key, required this.controller});
-
-  @override
-  State<DestinationsSection> createState() => _DestinationsSectionState();
-}
-
-class _DestinationsSectionState extends State<DestinationsSection> {
-  addIntermediateLocation() {
-    if (!canAddIntermediateLocationButton()) {
-      // Show snackbar with message
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Please fill in all fields before adding a new intermediate location')));
-      return;
-    }
-
-    final intermediateController = TextEditingController();
-    widget.controller.intermediateControllers.add(intermediateController);
-
-    setState(() {});
-  }
-
-  removeIntermediateLocation(TextEditingController controller) {
-    widget.controller.intermediateControllers.remove(controller);
-    controller.dispose();
-    setState(() {});
-  }
-
-  bool anyIntermediateLocationIsEmpty() {
-    for (final controller in widget.controller.intermediateControllers) {
-      if (controller.text.isEmpty) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  canAddIntermediateLocationButton() {
-    return (widget.controller.intermediateControllers.length <= widget.maxIntermediateLocations &&
-        widget.controller.toController.text.isNotEmpty &&
-        widget.controller.fromController.text.isNotEmpty &&
-        !anyIntermediateLocationIsEmpty());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,25 +14,19 @@ class _DestinationsSectionState extends State<DestinationsSection> {
       AlarmSettingsAddressTile(
         icon: Icons.my_location,
         hintText: "From",
-        controller: widget.controller.fromController,
+        controller: controller.fromController,
       ),
-      for (final controller in widget.controller.intermediateControllers)
+      for (final controller in controller.intermediateControllers)
         AlarmSettingsAddressTile(
           icon: Icons.circle_outlined,
-          hintText: "Intermediate",
+          hintText: "Add intermediate...",
           controller: controller,
-          onClear: () => removeIntermediateLocation(controller),
         ),
       AlarmSettingsAddressTile(
         icon: Icons.flag,
         hintText: "To",
-        controller: widget.controller.toController,
+        controller: controller.toController,
       ),
-      widget.controller.intermediateControllers.length >= widget.maxIntermediateLocations
-          ? const SizedBox()
-          :
-        AddIntermediateLocationButton(
-          icon: Icons.add_circle_outline, onPressed: addIntermediateLocation)
     ]);
   }
 }
@@ -86,6 +35,50 @@ class DestinationsController {
   final List<TextEditingController> intermediateControllers = [];
   final TextEditingController fromController = TextEditingController();
   final TextEditingController toController = TextEditingController();
+  final int maxIntermediateLocations;
+  VoidCallback onChange = () {};
+
+  DestinationsController({this.maxIntermediateLocations = 5});
+
+  void setOnChange(VoidCallback onChange) {
+    this.onChange = onChange;
+    fromController.addListener(onChange);
+    toController.addListener(onChange);
+    for (final controller in intermediateControllers) {
+      controller.addListener(onChange);
+    }
+  }
+
+  void addIntermediateController() {
+    var controller = TextEditingController();
+    controller.addListener(onChange);
+    intermediateControllers.add(controller);
+  }
+
+  void removeIntermediateController(TextEditingController controller) {
+    intermediateControllers.remove(controller);
+    // controller.dispose(); TODO disposing during listener callback breaks things. Not disposing is probably bad too. What's the best approach?
+  }
+
+  void updateControllers() {
+    if (intermediateControllers.isEmpty && fromController.text.isNotEmpty) {
+      addIntermediateController();
+      return;
+    }
+    for (var i = intermediateControllers.length - 1; i >= 0; i--) {
+      var current = intermediateControllers[i];
+      var previous = i == 0 ? fromController : intermediateControllers[i - 1];
+      if (current.text.isEmpty && previous.text.isEmpty) {
+        removeIntermediateController(current);
+      } else {
+        if (current.text.isNotEmpty &&
+            intermediateControllers.length < maxIntermediateLocations) {
+          addIntermediateController();
+        }
+        break;
+      }
+    }
+  }
 
   void dispose() {
     fromController.dispose();
@@ -101,7 +94,8 @@ class DestinationsController {
     intermediateControllers.clear();
     for (final intermediateLocation in alarm.getIntermediateLocations()) {
       if (intermediateLocation.isNotEmpty) {
-        intermediateControllers.add(TextEditingController(text: intermediateLocation));
+        intermediateControllers
+            .add(TextEditingController(text: intermediateLocation));
       }
     }
   }
@@ -109,7 +103,7 @@ class DestinationsController {
   void setAlarm(Alarm alarm) {
     alarm.origin = fromController.text;
     alarm.destination = toController.text;
-    
+
     getIntermediateLocation(int i) {
       if (i < intermediateControllers.length) {
         return intermediateControllers[i].text.toString();

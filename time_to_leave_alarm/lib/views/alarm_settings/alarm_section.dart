@@ -33,6 +33,8 @@ class _AlarmSectionState extends State<AlarmSection> {
                 hintText: "Name",
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
+                hintStyle: TextStyle(fontSize: 16, color: Colors.black38, fontWeight: FontWeight.w400),
+                labelStyle: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w400)
               ))),
       AlarmSettingsIconTile(
           icon: Icons.music_note,
@@ -44,7 +46,7 @@ class _AlarmSectionState extends State<AlarmSection> {
             onPressed: () {},
             child: const Text(
               "Ringtone",
-              style: TextStyle(fontSize: 16, color: Colors.black38),
+              style: TextStyle(fontSize: 16, color: Colors.black38, fontWeight: FontWeight.w400),
             ),
           )),
       AlarmSettingsSwitchTile(

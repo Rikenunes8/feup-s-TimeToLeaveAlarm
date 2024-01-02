@@ -31,7 +31,9 @@ class TransportationMeanCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(5),
             child: Column(
-              children: [Icon(icon), Text(text, style: const TextStyle(fontSize: 12),)],
+              children: [Icon(icon, color: selected ? Colors.white : Colors.black,), Text(text, style: TextStyle(fontSize: 12, color: selected
+                          ? Colors.white
+                          : Colors.black),)],
             ),
           ),
         ),),
