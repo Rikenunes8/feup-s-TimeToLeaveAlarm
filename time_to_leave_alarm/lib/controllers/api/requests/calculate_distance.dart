@@ -13,7 +13,8 @@ calculateDistance(
     travelMode = 'DRIVE',
     avoidTolls = false,
     avoidHighways = false,
-    avoidFerries = false}) {
+    avoidFerries = false,
+    DateTime? arrivalTime}) {
   if (googleDistanceAPIKey == '') {
     debugPrint('Google Distance API Key not configured. Using mock data');
     then(2342);
@@ -45,7 +46,7 @@ calculateDistance(
         'avoidHighways': avoidHighways,
         'avoidFerries': avoidFerries
       },
-      // "departureTime": "2023-10-15T15:01:23.045123456Z",
+      if (travelMode == 'TRANSIT' && arrivalTime != null) 'arrivalTime': arrivalTime.toUtc().toString().replaceFirst(' ', 'T'),
     };
 
     final uri = Uri.https(

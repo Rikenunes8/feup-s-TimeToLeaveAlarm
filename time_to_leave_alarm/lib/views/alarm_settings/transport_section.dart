@@ -9,7 +9,7 @@ enum TransportMean { drive, transit, walk, bicycle }
 
 extension ParseToString on TransportMean {
   String toShortString() {
-    return toString().split('.').last;
+    return toString().split('.').last.toUpperCase();
   }
 }
 
@@ -105,7 +105,7 @@ class TransportController {
 
   void loadAlarm(Alarm alarm) {
     mean = TransportMean.values
-        .firstWhere((e) => e.toString() == 'TransportMean.${alarm.mode}');
+        .firstWhere((e) => e.toString() == 'TransportMean.${alarm.mode.toLowerCase()}');
     tolls = alarm.tolls;
     highways = alarm.highways;
     ferries = alarm.ferries;

@@ -218,6 +218,7 @@ class _AlarmPageState extends State<AlarmPage> {
         avoidFerries: transportController.ferries,
         avoidHighways: transportController.highways,
         avoidTolls: transportController.tolls,
+        arrivalTime: arrivalTime,
         then: (time) async {
           final newAlarm = alarm == null;
           final leaveTimeString =

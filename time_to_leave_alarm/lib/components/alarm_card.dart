@@ -107,7 +107,7 @@ class _AlarmCardState extends State<AlarmCard> {
   }
 
   IconData? modeIcon(String mode) {
-    switch (mode) {
+    switch (mode.toLowerCase()) {
       case 'drive':
         return Icons.directions_car_outlined;
       case 'transit':
