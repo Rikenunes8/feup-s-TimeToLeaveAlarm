@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/controllers/api/requests/calculate_distance.dart';
 import 'package:time_to_leave_alarm/controllers/api/widgets/auto_complete_text_field.dart';
+import 'package:time_to_leave_alarm/controllers/api/integrations/save_to_calendar.dart';
 import 'package:time_to_leave_alarm/components/my_location_button.dart';
 import 'package:time_to_leave_alarm/components/map_location_button.dart';
 import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
@@ -103,6 +104,13 @@ class _AlarmPageState extends State<AlarmPage> {
                             Text("Send"),
                           ]),
                         ),
+                        const PopupMenuItem(
+                            value: "save",
+                            child: Row(children: [
+                              Icon(Icons.calendar_month),
+                              SizedBox(width: 10),
+                              Text("Save"),
+                            ]))
                       ];
                     },
                     onSelected: (value) {
@@ -113,6 +121,8 @@ class _AlarmPageState extends State<AlarmPage> {
                         final code = alarm!.toCode();
                         Share.share(
                             'Use this code to import the alarm in the TimeToLeave App:\n$code');
+                      } else if (value == "save") {
+                        saveToCalendar(alarm: alarm!);
                       }
                     },
                   )
