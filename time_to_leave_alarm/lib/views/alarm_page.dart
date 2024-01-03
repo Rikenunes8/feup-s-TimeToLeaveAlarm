@@ -201,6 +201,7 @@ class _AlarmPageState extends State<AlarmPage> {
         origin: origin,
         intermediateLocations: destinationsController.intermediateControllers
             .map((e) => e.text.toString())
+            .where((e) => e.isNotEmpty)
             .toList(),
         destination: destination,
         travelMode: transportController.mean.toShortString(),
