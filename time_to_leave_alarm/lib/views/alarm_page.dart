@@ -12,6 +12,7 @@ import 'package:time_to_leave_alarm/views/alarm_settings/alarm_section.dart';
 import 'package:time_to_leave_alarm/views/alarm_settings/destinations_section.dart';
 import 'package:time_to_leave_alarm/views/alarm_settings/schedule_section.dart';
 import 'package:time_to_leave_alarm/views/alarm_settings/transport_section.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AlarmPageArguments {
   final Alarm alarm;
@@ -31,15 +32,37 @@ class AlarmPage extends StatefulWidget {
 }
 
 class _AlarmPageState extends State<AlarmPage> {
-  final DestinationsController destinationsController = DestinationsController();
+  final DestinationsController destinationsController =
+      DestinationsController();
   final ScheduleController scheduleController = ScheduleController();
   final TransportController transportController = TransportController();
   final AlarmController alarmController = AlarmController();
+  bool editing = false;
+  Alarm? alarm;
+
+  @override
+  void didChangeDependencies() {
+    final args =
+        ModalRoute.of(context)?.settings.arguments as AlarmPageArguments?;
+    if (args != null) {
+      editing = true;
+      loadAlarm(args.alarm);
+      alarm = args.alarm;
+    }
+    super.didChangeDependencies();
+  }
+
+  void loadAlarm(Alarm alarm) {
+    destinationsController.loadAlarm(alarm);
+    scheduleController.loadAlarm(alarm);
+    transportController.loadAlarm(alarm);
+    alarmController.loadAlarm(alarm);
+  }
 
   _AlarmPageState() {
     destinationsController.setOnChange(() => setState(() {
-      destinationsController.updateControllers();
-    }));
+          destinationsController.updateControllers();
+        }));
   }
 
   @override
@@ -51,28 +74,53 @@ class _AlarmPageState extends State<AlarmPage> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as AlarmPageArguments?;
-    if (args != null) {
-      destinationsController.loadAlarm(args.alarm);
-      scheduleController.loadAlarm(args.alarm);
-      transportController.loadAlarm(args.alarm);
-      alarmController.loadAlarm(args.alarm);
-    }
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Text(widget.title),
           actions: <Widget>[
-            args?.alarm != null
-                ? IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      context.read<AlarmProvider>().deleteAlarm(args!.alarm);
-                      Navigator.pop(context);
+            editing
+                ? PopupMenuButton(
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        const PopupMenuItem(
+                          value: "delete",
+                          child: Row(children: [
+                            Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            SizedBox(width: 10),
+                            Text("Delete", style: TextStyle(color: Colors.red)),
+                          ]),
+                        ),
+                        const PopupMenuItem(
+                          value: "share",
+                          child: Row(children: [
+                            Icon(Icons.share),
+                            SizedBox(width: 10),
+                            Text("Send"),
+                          ]),
+                        ),
+                      ];
+                    },
+                    onSelected: (value) {
+                      if (value == "delete") {
+                        context.read<AlarmProvider>().deleteAlarm(alarm!);
+                        Navigator.pop(context);
+                      } else if (value == "share") {
+                        final code = alarm!.toCode();
+                        Share.share(
+                            'Use this code to import the alarm in the TimeToLeave App:\n$code');
+                      }
                     },
                   )
-                : Container(),
+                : IconButton(
+                    onPressed: () {
+                      importAlarmDialog();
+                    },
+                    icon: Icon(Icons.file_upload_outlined)),
           ]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -96,16 +144,52 @@ class _AlarmPageState extends State<AlarmPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => createOrUpdateAlarm(args?.alarm),
+        onPressed: () => createOrUpdateAlarm(alarm),
         child: const Icon(Icons.check),
       ),
     );
   }
 
+  Future importAlarmDialog() => showDialog(
+      context: context,
+      builder: (context) {
+        final controller = TextEditingController();
+        return AlertDialog(
+          title: const Text("Import alarm"),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              hintText: "ttl.alarm://...",
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel")),
+            TextButton(
+                onPressed: () {
+                  final alarm = Alarm.fromCode(controller.text);
+                  if (alarm != null) {
+                    Navigator.pop(context);
+                    loadAlarm(alarm);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Invalid code"),
+                    ));
+                  }
+                },
+                child: const Text("Import")),
+          ],
+        );
+      });
+
   createOrUpdateAlarm(Alarm? alarm) {
     final origin = destinationsController.fromController.text;
     final destination = destinationsController.toController.text;
     final arrivalTime = scheduleController.dateTime;
+    // TODO maybe visually mark the fields that are required
     if (origin.isEmpty || destination.isEmpty || arrivalTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Required fields empty"),
@@ -115,10 +199,9 @@ class _AlarmPageState extends State<AlarmPage> {
 
     calculateDistance(
         origin: origin,
-        intermediateLocations: destinationsController
-                .intermediateControllers
-                .map((e) => e.text.toString())
-                .toList(),
+        intermediateLocations: destinationsController.intermediateControllers
+            .map((e) => e.text.toString())
+            .toList(),
         destination: destination,
         travelMode: transportController.mean.toShortString(),
         avoidFerries: transportController.ferries,
@@ -126,11 +209,13 @@ class _AlarmPageState extends State<AlarmPage> {
         avoidTolls: transportController.tolls,
         then: (time) async {
           final newAlarm = alarm == null;
-          final leaveTimeString = formatDateTime(arrivalTime.subtract(Duration(seconds: time)));
+          final leaveTimeString =
+              formatDateTime(arrivalTime.subtract(Duration(seconds: time)));
 
           if (newAlarm) {
             final androidAlarmId = Random().nextInt(2147483647);
-            alarm = Alarm(leaveTime: leaveTimeString, androidAlarmId: androidAlarmId);
+            alarm = Alarm(
+                leaveTime: leaveTimeString, androidAlarmId: androidAlarmId);
           } else {
             alarm!.leaveTime = leaveTimeString;
             alarm!.turnedOn = true;

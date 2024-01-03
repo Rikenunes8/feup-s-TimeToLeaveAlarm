@@ -3,6 +3,7 @@ import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_switch_tile.dart';
 import 'package:time_to_leave_alarm/components/transportation_mean_card.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
+import 'package:community_material_icon/community_material_icon.dart';
 
 enum TransportMean { drive, transit, walk, bicycle }
 
@@ -36,7 +37,7 @@ class _TransportSectionState extends State<TransportSection> {
           },
         ),
         AlarmSettingsSwitchTile(
-          icon: Icons.directions,
+          icon: CommunityMaterialIcons.highway,
           text: "Highways",
           initial: widget.controller.highways,
           onChanged: (v) {

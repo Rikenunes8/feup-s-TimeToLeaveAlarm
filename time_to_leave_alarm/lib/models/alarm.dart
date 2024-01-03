@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 class Alarm {
   int? id;
   String origin;
@@ -103,7 +106,28 @@ class Alarm {
     return id == (other as Alarm).id;
   }
 
-  countIntermediateLocations() { // This is beautiful
+  String toCode() {
+    final json = utf8.encode(jsonEncode(toMap()));
+    final zip = gzip.encode(json);
+    final code = base64.encode(zip);
+    return "ttl.alarm://$code/";
+  }
+
+  static Alarm? fromCode(String code) {
+    try {
+      code = code.substring(code.indexOf("ttl.alarm://") + 12);
+      code = code.substring(0, code.length - 1);
+      final zip = base64.decode(code);
+      final json = gzip.decode(zip);
+      final map = jsonDecode(utf8.decode(json));
+      return Alarm.fromMap(map);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  countIntermediateLocations() {
+    // This is beautiful
     var count = 0;
     if (intermediateLocation1.isNotEmpty) {
       count++;
