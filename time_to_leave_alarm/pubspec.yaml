@@ -48,6 +48,7 @@ dependencies:
   community_material_icon: ^5.9.55
   share_plus: ^7.2.1
   add_2_calendar: ^3.0.1
+  url_launcher: ^6.2.2
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_to_leave_alarm/controllers/providers/alarm_provider.dart';
+import 'package:time_to_leave_alarm/controllers/api/integrations/launch_maps.dart';
 import 'package:time_to_leave_alarm/controllers/utils.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
 
@@ -31,7 +32,9 @@ class _AlarmCardState extends State<AlarmCard> {
                     timeFromDateTime(widget.alarm.leaveTime),
                     style: const TextStyle(fontSize: 30),
                   ),
-                  const SizedBox(width: 10,),
+                  const SizedBox(
+                    width: 10,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -47,14 +50,17 @@ class _AlarmCardState extends State<AlarmCard> {
                   )
                 ],
               ),
-              Switch(
-                value: widget.alarm.turnedOn,
-
-                onChanged: (bool value) {
-                  widget.alarm.turnedOn = value;
-                  context.read<AlarmProvider>().updateAlarm(widget.alarm);
-                },
-              )
+              Row(children: [
+                IconButton(onPressed: () => {launchAlarmNavigation(widget.alarm)}, icon: const Icon(Icons.map)),
+                Switch(
+                  value: widget.alarm.turnedOn,
+                  onChanged: (bool value) {
+                    widget.alarm.turnedOn = value;
+                    context.read<AlarmProvider>().updateAlarm(widget.alarm);
+                  },
+                ),
+                ],
+              ),
             ],
           ),
           _address(Icons.circle, widget.alarm.origin),
@@ -69,15 +75,17 @@ class _AlarmCardState extends State<AlarmCard> {
   }
 
   _intermediateAddresses(Alarm alarm) {
-    final intermediateAddressesNotEmpty =
-        alarm.getIntermediateLocations().where((element) => element.isNotEmpty).toList();
+    final intermediateAddressesNotEmpty = alarm
+        .getIntermediateLocations()
+        .where((element) => element.isNotEmpty)
+        .toList();
     return Column(
       children: [
         for (final address in intermediateAddressesNotEmpty)
-        Column(children:[
-          _address(Icons.circle_outlined, address),
-          const SizedBox(height: 5)
-        ]),
+          Column(children: [
+            _address(Icons.circle_outlined, address),
+            const SizedBox(height: 5)
+          ]),
       ],
     );
   }
