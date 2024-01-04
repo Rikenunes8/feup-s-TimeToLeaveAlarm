@@ -30,6 +30,7 @@ class DatabaseManager {
   static const String snoozeCol = "snooze";
   static const String turnedOnCol = "turned_on";
   static const String androidAlarmIdCol = "android_alarm_id";
+  static const String recalculateAndroidAlarmIdCol = "recalculate_android_alarm_id";
 
   Future<Database> get database async {
     if (_database != null) {
@@ -77,7 +78,8 @@ class DatabaseManager {
         $vibrateCol INTEGER,
         $snoozeCol INTEGER,
         $turnedOnCol INTEGER,
-        $androidAlarmIdCol INTEGER
+        $androidAlarmIdCol INTEGER,
+        $recalculateAndroidAlarmIdCol INTEGER
       );
       ''');
   }

@@ -17,7 +17,7 @@ calculateDistance(
     DateTime? arrivalTime}) {
   if (googleDistanceAPIKey == '') {
     debugPrint('Google Distance API Key not configured. Using mock data');
-    then(2342);
+    then(600 /*+ Random().nextInt(100)*/);
   } else {
     final uriParameters = {
       'key': googleDistanceAPIKey,

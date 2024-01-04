@@ -19,6 +19,7 @@ class Alarm {
   bool snooze;
   bool turnedOn;
   int androidAlarmId;
+  int recalculateAndroidAlarmId;
   String intermediateLocation1;
   String intermediateLocation2;
   String intermediateLocation3;
@@ -43,6 +44,7 @@ class Alarm {
       this.snooze = false,
       this.turnedOn = true,
       this.androidAlarmId = 0,
+      this.recalculateAndroidAlarmId = 1,
       this.intermediateLocation1 = '',
       this.intermediateLocation2 = '',
       this.intermediateLocation3 = '',
@@ -68,6 +70,7 @@ class Alarm {
             snooze: json["snooze"] == 0 ? false : true,
             turnedOn: json["turned_on"] == 0 ? false : true,
             androidAlarmId: json["android_alarm_id"],
+            recalculateAndroidAlarmId: json["recalculate_android_alarm_id"],
             intermediateLocation1: json["intermediate_location_1"],
             intermediateLocation2: json["intermediate_location_2"],
             intermediateLocation3: json["intermediate_location_3"],
@@ -93,6 +96,7 @@ class Alarm {
       "snooze": snooze ? 1 : 0,
       "turned_on": turnedOn ? 1 : 0,
       "android_alarm_id": androidAlarmId,
+      "recalculate_android_alarm_id": recalculateAndroidAlarmId,
       "intermediate_location_1": intermediateLocation1,
       "intermediate_location_2": intermediateLocation2,
       "intermediate_location_3": intermediateLocation3,
