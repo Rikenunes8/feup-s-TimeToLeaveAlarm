@@ -15,3 +15,9 @@ DateTime stringToDateTime(dateTime) {
 String timeFromDateTime(String dateTime) {
   return formatTime(stringToDateTime(dateTime));
 }
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
+}

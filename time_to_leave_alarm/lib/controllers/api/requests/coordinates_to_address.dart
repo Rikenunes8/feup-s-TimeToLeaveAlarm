@@ -28,3 +28,27 @@ convertCoordinatesToAddress(
     });
   }
 }
+
+convertAddressToCoordinates(
+    {required String address, required Function(double, double) then}) {
+  if (googleDistanceAPIKey == '') {
+    debugPrint('Google Distance API Key not configured. Using mock data');
+    then(0.0, 0.0);
+  } else {
+    final queryParameters = {
+      'address': address,
+      'key': googleDistanceAPIKey,
+    };
+    final uri = Uri.https(
+        'maps.googleapis.com', '/maps/api/geocode/json', queryParameters);
+    debugPrint(uri.toString());
+    http.get(uri).then((value) {
+      debugPrint(value.body);
+      debugPrint(value.statusCode.toString());
+      var json = jsonDecode(value.body);
+      var lat = json["results"][0]["geometry"]["location"]["lat"];
+      var lng = json["results"][0]["geometry"]["location"]["lng"];
+      then(lat, lng);
+    });
+  }
+}
