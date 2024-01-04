@@ -17,7 +17,7 @@
     </queries>
 
     <application
-        android:label="time_to_leave_alarm"
+        android:label="Time To Leave"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
