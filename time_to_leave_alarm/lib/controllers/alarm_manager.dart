@@ -14,6 +14,7 @@ import 'package:time_to_leave_alarm/controllers/utils.dart';
 import 'database_manager.dart';
 
 const minTimeToRecalculateDistance = 10;
+const minTimeToRecalculateDistanceForCurrentLocation = 2;
 
 // Be sure to annotate your callback function to avoid issues in release mode on Flutter >= 3.3.0
 @pragma('vm:entry-point')

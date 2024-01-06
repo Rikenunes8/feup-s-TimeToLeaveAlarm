@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+const String CURRENT_LOCATION_STRING = "Current Location";
+
 class Alarm {
   int? id;
   String origin;

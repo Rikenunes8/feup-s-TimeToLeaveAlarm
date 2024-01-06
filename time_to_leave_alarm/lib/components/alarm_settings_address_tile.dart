@@ -9,6 +9,7 @@ class AlarmSettingsAddressTile extends StatelessWidget {
   final TextEditingController controller;
   final void Function()? onClear;
   final double? iconSize;
+  final bool disabled;
 
   const AlarmSettingsAddressTile(
       {super.key,
@@ -16,7 +17,8 @@ class AlarmSettingsAddressTile extends StatelessWidget {
       required this.icon,
       required this.controller,
       this.onClear,
-      this.iconSize});
+      this.iconSize,
+      this.disabled = false});
 
   Widget _buildAddressTile(BuildContext context) {
     return Row(children: [
@@ -26,17 +28,35 @@ class AlarmSettingsAddressTile extends StatelessWidget {
           child: AutoCompleteTextField(
         controller: controller,
         hintText: hintText,
-        textStyle: controller.text.isEmpty
-            ? const TextStyle(fontSize: 16, color: Colors.black26, fontWeight: FontWeight.w400)
-            : const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.w400),
+        textStyle: 
+          disabled ? 
+            const TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.w400)
+          : controller.text.isEmpty
+            ? const TextStyle(
+                fontSize: 16,
+                color: Colors.black26,
+                fontWeight: FontWeight.w400)
+            : const TextStyle(
+                fontSize: 16, color: Colors.black, fontWeight: FontWeight.w400),
+        disabled: disabled,
       )),
-      if (controller.text.isNotEmpty)
+      if (controller.text.isNotEmpty & !disabled)
         GestureDetector(
             onTap: () => {controller.clear(), if (onClear != null) onClear!()},
             child: const Icon(Icons.clear)),
-      MyLocationButton(then: (address) => {controller.text = address}, iconSize: 20),
-      MapLocationButton(then: (address) => {controller.text = address}, iconSize: 20),
+      if (!disabled) _locationSetButtons(),
     ]);
+  }
+
+  _locationSetButtons() {
+    return Row(
+      children: [
+        MyLocationButton(
+            then: (address) => {controller.text = address}, iconSize: 20),
+        MapLocationButton(
+            then: (address) => {controller.text = address}, iconSize: 20),
+      ],
+    );
   }
 
   @override

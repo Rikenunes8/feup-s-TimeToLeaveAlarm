@@ -4,22 +4,31 @@ import 'package:google_places_flutter/model/prediction.dart';
 import 'package:time_to_leave_alarm/controllers/api/secrets.dart';
 
 class AutoCompleteTextField extends StatelessWidget {
-  const AutoCompleteTextField({super.key, required this.controller, required this.hintText, this.textStyle});
+  const AutoCompleteTextField(
+      {super.key,
+      required this.controller,
+      required this.hintText,
+      this.textStyle,
+      this.disabled = false});
 
   final TextEditingController controller;
   final String hintText;
   final TextStyle? textStyle;
+  final bool disabled;
 
   Widget buildMock(BuildContext context) {
-    return TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: hintText,
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-        ),
-        style: textStyle
-    );
+    return Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: TextField(
+            controller: controller,
+            style: textStyle ?? const TextStyle(),
+            decoration: InputDecoration(
+              hintText: hintText,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+            ),
+            readOnly: disabled));
   }
 
   Widget buildApi(BuildContext context) {
@@ -41,8 +50,8 @@ class AutoCompleteTextField extends StatelessWidget {
       },
       itemClick: (Prediction prediction) {
         controller.text = prediction.description ?? "";
-        controller.selection =
-            TextSelection.fromPosition(TextPosition(offset: prediction.description?.length ?? 0));
+        controller.selection = TextSelection.fromPosition(
+            TextPosition(offset: prediction.description?.length ?? 0));
       },
       seperatedBuilder: const Divider(),
       // OPTIONAL// If you want to customize list view item builder
@@ -71,6 +80,7 @@ class AutoCompleteTextField extends StatelessWidget {
     if (googleAutocompleteAPIKey == '') {
       return buildMock(context);
     } else {
+      if (disabled) return buildMock(context);
       return buildApi(context);
     }
   }
