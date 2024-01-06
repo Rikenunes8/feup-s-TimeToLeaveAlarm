@@ -53,6 +53,8 @@ dependencies:
   flutter_system_ringtones: ^0.0.6
   flutter_sound_lite: ^8.5.0
   uri_to_file: ^1.0.0
+  calendar_view: ^1.0.4
+  syncfusion_flutter_calendar: ^22.2.12
 
 flutter_icons:
   android: true
