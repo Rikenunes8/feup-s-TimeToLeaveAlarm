@@ -59,23 +59,23 @@ class _AlarmSectionState extends State<AlarmSection> {
           });
         },
       ),
-      AlarmSettingsSwitchTile(
-        icon: Icons.snooze,
-        text: "Snooze",
-        initial: widget.controller.snooze,
-        onChanged: (v) {
-          setState(() {
-            widget.controller.snooze = v;
-          });
-        },
-      )
+      // AlarmSettingsSwitchTile(
+      //   icon: Icons.snooze,
+      //   text: "Snooze",
+      //   initial: widget.controller.snooze,
+      //   onChanged: (v) {
+      //     setState(() {
+      //       widget.controller.snooze = v;
+      //     });
+      //   },
+      // )
     ]);
   }
 }
 
 class AlarmController {
   bool vibrate = false;
-  bool snooze = false;
+  // bool snooze = false;
   String ringtone = "";
   TextEditingController nameController = TextEditingController();
 
@@ -85,14 +85,14 @@ class AlarmController {
 
   void loadAlarm(Alarm alarm) {
     vibrate = alarm.vibrate;
-    snooze = alarm.snooze;
+    // snooze = alarm.snooze;
     ringtone = alarm.ringtone;
     nameController.text = alarm.name;
   }
 
   void setAlarm(Alarm alarm) {
     alarm.vibrate = vibrate;
-    alarm.snooze = snooze;
+    // alarm.snooze = snooze;
     alarm.ringtone = ringtone;
     alarm.name = nameController.text;
   }

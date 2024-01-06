@@ -7,6 +7,7 @@ class Alarm {
   String destination;
   String leaveTime;
   String arriveTime;
+  int anticipation;
   bool period;
   String periodData;
   String mode;
@@ -16,7 +17,7 @@ class Alarm {
   String name;
   String ringtone;
   bool vibrate;
-  bool snooze;
+  // bool snooze;
   bool turnedOn;
   int androidAlarmId;
   int recalculateAndroidAlarmId;
@@ -32,6 +33,7 @@ class Alarm {
       this.destination = '',
       this.leaveTime = '',
       this.arriveTime = '',
+      this.anticipation = 0,
       this.period = false,
       this.periodData = '',
       this.mode = 'driving',
@@ -41,7 +43,7 @@ class Alarm {
       this.name = '',
       this.ringtone = '',
       this.vibrate = false,
-      this.snooze = false,
+      // this.snooze = false,
       this.turnedOn = true,
       this.androidAlarmId = 0,
       this.recalculateAndroidAlarmId = 1,
@@ -58,6 +60,7 @@ class Alarm {
             destination: json["destination"],
             leaveTime: json["leave_time"],
             arriveTime: json["arrive_time"],
+            anticipation: json["anticipation"],
             period: json["period"] == 0 ? false : true,
             periodData: json["period_data"],
             mode: json["mode"],
@@ -67,7 +70,7 @@ class Alarm {
             name: json["name"],
             ringtone: json["name"],
             vibrate: json["vibrate"] == 0 ? false : true,
-            snooze: json["snooze"] == 0 ? false : true,
+            // snooze: json["snooze"] == 0 ? false : true,
             turnedOn: json["turned_on"] == 0 ? false : true,
             androidAlarmId: json["android_alarm_id"],
             recalculateAndroidAlarmId: json["recalculate_android_alarm_id"],
@@ -84,6 +87,7 @@ class Alarm {
       "destination": destination,
       "leave_time": leaveTime,
       "arrive_time": arriveTime,
+      "anticipation": anticipation,
       "period": period ? 1 : 0,
       "period_data": periodData,
       "mode": mode,
@@ -93,7 +97,7 @@ class Alarm {
       "name": name,
       "ringtone": ringtone,
       "vibrate": vibrate ? 1 : 0,
-      "snooze": snooze ? 1 : 0,
+      // "snooze": snooze ? 1 : 0,
       "turned_on": turnedOn ? 1 : 0,
       "android_alarm_id": androidAlarmId,
       "recalculate_android_alarm_id": recalculateAndroidAlarmId,
