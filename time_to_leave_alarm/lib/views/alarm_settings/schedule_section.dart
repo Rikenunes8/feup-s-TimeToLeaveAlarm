@@ -112,14 +112,14 @@ class ScheduleController {
 
   void loadAlarm(Alarm alarm) {
     dateTime = stringToDateTime(alarm.arriveTime);
-    anticipation.text = alarm.anticipation.toString();
+    anticipation.text = alarm.anticipation == 0 ? '' : alarm.anticipation.toString();
     repeat = alarm.period;
     repeatValues = alarm.periodData;
   }
 
   void setAlarm(Alarm alarm) {
     alarm.arriveTime = formatDateTime(dateTime!);
-    alarm.anticipation = int.parse(anticipation.text);
+    alarm.anticipation = anticipation.text != '' ? int.parse(anticipation.text) : 0;
     alarm.period = repeat;
     alarm.periodData = repeatValues;
   }
