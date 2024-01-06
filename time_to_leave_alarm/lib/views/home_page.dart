@@ -31,14 +31,15 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-          child: ListView.builder(
+          child: alarms.length > 0? ListView.builder(
               itemCount: alarms.length,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {Navigator.pushNamed(context, AlarmPage.route, arguments: AlarmPageArguments(alarms[index]));},
                   child: AlarmCard(alarm: alarms[index]),
                 );
-              }),
+              }) : 
+              Text("No alarms yet. Press the + button to create one.", style: TextStyle(color: Colors.black38, fontSize: 12),),
         ),
       ),
       floatingActionButton: FloatingActionButton(
