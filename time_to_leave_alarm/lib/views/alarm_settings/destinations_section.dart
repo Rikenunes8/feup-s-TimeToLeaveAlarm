@@ -57,7 +57,6 @@ class DestinationsController {
 
   void removeIntermediateController(TextEditingController controller) {
     intermediateControllers.remove(controller);
-    // controller.dispose(); TODO disposing during listener callback breaks things. Not disposing is probably bad too. What's the best approach?
   }
 
   void updateControllers() {
@@ -112,8 +111,6 @@ class DestinationsController {
       }
     }
 
-    // TODO maybe if some of the middle ones are empty, skip them
-    //      which means that if only [0, 3] are filled, those become [0, 1] and you have [2, 3, 4] empty
     alarm.intermediateLocation1 = getIntermediateLocation(0);
     alarm.intermediateLocation2 = getIntermediateLocation(1);
     alarm.intermediateLocation3 = getIntermediateLocation(2);

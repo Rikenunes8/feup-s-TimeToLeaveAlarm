@@ -109,7 +109,7 @@ class _AlarmPageState extends State<AlarmPage> {
                             child: Row(children: [
                               Icon(Icons.calendar_month),
                               SizedBox(width: 10),
-                              Text("Save"),
+                              Text("Save to calendar"),
                             ]))
                       ];
                     },
@@ -199,7 +199,7 @@ class _AlarmPageState extends State<AlarmPage> {
     final origin = destinationsController.fromController.text;
     final destination = destinationsController.toController.text;
     final arrivalTime = scheduleController.dateTime;
-    // TODO maybe visually mark the fields that are required
+
     if (origin.isEmpty || destination.isEmpty || arrivalTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Required fields empty"),

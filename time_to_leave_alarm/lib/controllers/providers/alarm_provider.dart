@@ -38,8 +38,6 @@ class AlarmProvider with ChangeNotifier {
   deleteAlarm(Alarm alarm) {
     _alarms.remove(alarm);
     if (alarm.id != null) {
-      // TODO aparently alarms for some reason don't have ID. i think the problem is in creation, they are not saved in the database
-      //      this doesn't fix it but at least sweeps the issue under the rug if these kinds of things happen
       DatabaseManager().deleteAlarm(alarm.id!);
     }
     cancelAlarm(alarm);

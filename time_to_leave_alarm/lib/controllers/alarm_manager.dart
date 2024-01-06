@@ -46,8 +46,9 @@ void recalculateAlarmCallback(int id, Map<String, dynamic> params) {
       avoidTolls: alarm.tolls,
       arrivalTime: stringToDateTime(alarm.arriveTime),
       then: (time) async {
-        final leaveTimeString =
-            formatDateTime(stringToDateTime(alarm.arriveTime).subtract(Duration(seconds: time)));
+        final leaveTimeString = formatDateTime(
+            stringToDateTime(alarm.arriveTime)
+                .subtract(Duration(seconds: time)));
 
         alarm.leaveTime = leaveTimeString;
         alarm.recalculateAndroidAlarmId = Random().nextInt(2147483647);
@@ -61,31 +62,99 @@ void recalculateAlarmCallback(int id, Map<String, dynamic> params) {
       });
 }
 
+@pragma('vm:entry-point')
+nextPeriodicAlarmCallback(int id, Map<String, dynamic> params) {
+  Alarm alarm = Alarm.fromMap(params['alarm']);
+  final next = _get_next_periodic_alarm_time(alarm);
+  if (next == null) return;
+  params['alarm']['arrive_time'] = next;
+  recalculateAlarmCallback(alarm.recalculateAndroidAlarmId, params);
+}
+
 setAlarm(Alarm alarm) async {
   String? weatherMessage;
-  final leaveDatetime = stringToDateTime(alarm.leaveTime);
-
   await AndroidAlarmManager.cancel(alarm.recalculateAndroidAlarmId);
-  int halfDiff = (leaveDatetime.difference(DateTime.now()).inMinutes / 2).round();
-  if (halfDiff > minTimeToRecalculateDistance) {
-    DateTime recalculateDateTime = leaveDatetime.subtract(Duration(minutes: halfDiff));
-    debugPrint(formatDateTime(recalculateDateTime));
-    await AndroidAlarmManager.oneShotAt(
-        recalculateDateTime, alarm.recalculateAndroidAlarmId, recalculateAlarmCallback,
-        wakeup: true, exact: true, rescheduleOnReboot: true, params: {'alarm': alarm.toMap()});
-  } else {
-    final coords = await convertAddressToCoordinates(address: alarm.destination);
-    if (coords != null) {
-      final weather = await getWeather(coords[0], coords[1]);
-      if (weather != null) {
-        final String description = weather['weather'][0]['description'];
-        final temp = weather['main']['temp'];
-        weatherMessage = '${description.capitalize()} | $tempºC';
+
+  if (stringToDateTime(alarm.leaveTime).isAfter(DateTime.now())) {
+    final leaveDatetime = stringToDateTime(alarm.leaveTime);
+    int halfDiff =
+        (leaveDatetime.difference(DateTime.now()).inMinutes / 2).round();
+    if (halfDiff > minTimeToRecalculateDistance) {
+      DateTime recalculateDateTime =
+          leaveDatetime.subtract(Duration(minutes: halfDiff));
+      debugPrint(formatDateTime(recalculateDateTime));
+      await AndroidAlarmManager.oneShotAt(recalculateDateTime,
+          alarm.recalculateAndroidAlarmId, recalculateAlarmCallback,
+          wakeup: true,
+          exact: true,
+          rescheduleOnReboot: true,
+          params: {'alarm': alarm.toMap()});
+    } else {
+      if (alarm.period) {
+        // Trigger recalculation of periodic alarms 5 minutes after they are due
+        final rescheduleTime =
+            stringToDateTime(alarm.arriveTime).add(const Duration(minutes: 5));
+        await AndroidAlarmManager.oneShotAt(rescheduleTime,
+            alarm.recalculateAndroidAlarmId, nextPeriodicAlarmCallback,
+            wakeup: true,
+            exact: true,
+            rescheduleOnReboot: true,
+            params: {'alarm': alarm.toMap()});
       }
+
+      final coords =
+          await convertAddressToCoordinates(address: alarm.destination);
+      if (coords != null) {
+        final weather = await getWeather(coords[0], coords[1]);
+        if (weather != null) {
+          final String description = weather['weather'][0]['description'];
+          final temp = weather['main']['temp'];
+          weatherMessage = '${description.capitalize()} | $tempºC';
+        }
+      }
+    }
+
+    await scheduleAlarm(alarm, leaveDatetime, weather: weatherMessage);
+  } else if (alarm.period) {
+    final rescheduleTime =
+        stringToDateTime(alarm.arriveTime).add(Duration(minutes: 5));
+    if (rescheduleTime.isAfter(DateTime.now())) {
+      await AndroidAlarmManager.oneShotAt(rescheduleTime,
+          alarm.recalculateAndroidAlarmId, nextPeriodicAlarmCallback,
+          wakeup: true,
+          exact: true,
+          rescheduleOnReboot: true,
+          params: {'alarm': alarm.toMap()});
+    } else {
+      nextPeriodicAlarmCallback(
+          alarm.recalculateAndroidAlarmId, {'alarm': alarm.toMap()});
+    }
+  }
+}
+
+_get_next_periodic_alarm_time(Alarm alarm) {
+  final periodData = alarm.periodData.split(",");
+  if (periodData.isEmpty) return;
+
+  DateTime? closestAlarm;
+  for (String id in periodData) {
+    final arriveTime = stringToDateTime(alarm.arriveTime);
+    final day = int.parse(id);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final nextDay = today.add(Duration(days: day - today.weekday + 1));
+
+    DateTime nextAlarm = DateTime(nextDay.year, nextDay.month, nextDay.day,
+        arriveTime.hour, arriveTime.minute);
+    if (nextAlarm.isBefore(DateTime.now())) {
+      nextAlarm = nextAlarm.add(Duration(days: 7));
+    }
+    if (closestAlarm == null || nextAlarm.isBefore(closestAlarm)) {
+      closestAlarm = nextAlarm;
     }
   }
 
-  await scheduleAlarm(alarm, leaveDatetime, weather: weatherMessage);
+  return formatDateTime(closestAlarm!);
 }
 
 _scheduleSingleAlarm(
@@ -115,7 +184,8 @@ _scheduleSingleAlarm(
 
 scheduleAlarm(Alarm alarm, DateTime leaveDatetime, {String? weather}) async {
   if (alarm.anticipation > 0) {
-    final anticipatedTime = leaveDatetime.subtract(Duration(minutes: alarm.anticipation));
+    final anticipatedTime =
+        leaveDatetime.subtract(Duration(minutes: alarm.anticipation));
     await _scheduleSingleAlarm(
         time: anticipatedTime,
         alarmId: alarm.androidAlarmId + 1,
