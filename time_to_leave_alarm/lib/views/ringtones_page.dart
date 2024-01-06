@@ -32,6 +32,14 @@ class _RingtonesPageState extends State<RingtonesPage> {
   }
 
   @override
+  void dispose() {
+    if (player != null && player!.isPlaying) {
+      player!.stopPlayer();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     return Scaffold(
