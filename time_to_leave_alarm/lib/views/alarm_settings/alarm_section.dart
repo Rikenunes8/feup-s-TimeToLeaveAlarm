@@ -42,7 +42,7 @@ class _AlarmSectionState extends State<AlarmSection> {
               final ringtone = await Navigator.pushNamed(context, RingtonesPage.route);
               if (ringtone != null) {
                 setState(() {
-                  widget.controller.ringtone = (ringtone as Ringtone?)?.title ?? '';
+                  widget.controller.ringtone = ringtone as String;
                 });
               }
             },

@@ -33,6 +33,7 @@ class _RingtonesPageState extends State<RingtonesPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -42,14 +43,24 @@ class _RingtonesPageState extends State<RingtonesPage> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
             child: ListView.builder(
-                itemCount: ringtones.length,
+                itemCount: ringtones.length+1,
                 itemBuilder: (BuildContext context, int index) {
-                  final ringtone = ringtones[index];
+                  if (index == 0) {
+                    return Card(
+                        child: ListTile(
+                          title: GestureDetector(
+                            onTap: () => Navigator.pop(context, ''),
+                            child: const Text("Default ringtone"),
+                          ),
+                          leading: const Icon(Icons.block),
+                        ));
+                  }
+                  final ringtone = ringtones[index-1];
                   return Card(
                     child: ListTile(
                       title: GestureDetector(
-                        onTap: () => Navigator.pop(context, ringtone),
-                        child: Text(ringtones[index].title),
+                        onTap: () => Navigator.pop(context, ringtone.title),
+                        child: Text(ringtone.title),
                       ),
                       leading: ringtonePlaying == ringtone
                           ? _buildPlayingRingtone(ringtone)
