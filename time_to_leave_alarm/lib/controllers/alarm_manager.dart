@@ -11,12 +11,15 @@ import 'package:time_to_leave_alarm/controllers/utils.dart';
 
 import 'database_manager.dart';
 
+const minTimeToRecalculateDistance = 10;
+
 // Be sure to annotate your callback function to avoid issues in release mode on Flutter >= 3.3.0
 @pragma('vm:entry-point')
 void setAlarmCallback(int id, Map<String, dynamic> params) {
   String message = 'Time to Leave';
-  if (!params['name'].isEmpty) message += '\n${params['name']}';
-  if (params['weather'] != null) message += '\n${params['weather']}';
+  if (!params['name'].isEmpty) message += ' | ${params['name']}';
+  if (params["anticipated"]) message += ' | Get ready';
+  if (params['weather'] != null) message += ' | ${params['weather']}';
   final intent = AndroidIntent(
     action: 'android.intent.action.SET_ALARM',
     arguments: <String, dynamic>{
@@ -43,8 +46,8 @@ void recalculateAlarmCallback(int id, Map<String, dynamic> params) {
       avoidTolls: alarm.tolls,
       arrivalTime: stringToDateTime(alarm.arriveTime),
       then: (time) async {
-        final leaveTimeString = formatDateTime(
-            stringToDateTime(alarm.arriveTime).subtract(Duration(seconds: time)));
+        final leaveTimeString =
+            formatDateTime(stringToDateTime(alarm.arriveTime).subtract(Duration(seconds: time)));
 
         alarm.leaveTime = leaveTimeString;
         alarm.recalculateAndroidAlarmId = Random().nextInt(2147483647);
@@ -55,8 +58,7 @@ void recalculateAlarmCallback(int id, Map<String, dynamic> params) {
         } else {
           cancelAlarm(alarm);
         }
-      }
-  );
+      });
 }
 
 setAlarm(Alarm alarm) async {
@@ -65,23 +67,14 @@ setAlarm(Alarm alarm) async {
 
   await AndroidAlarmManager.cancel(alarm.recalculateAndroidAlarmId);
   int halfDiff = (leaveDatetime.difference(DateTime.now()).inMinutes / 2).round();
-  if (halfDiff > 10) {
+  if (halfDiff > minTimeToRecalculateDistance) {
     DateTime recalculateDateTime = leaveDatetime.subtract(Duration(minutes: halfDiff));
     debugPrint(formatDateTime(recalculateDateTime));
     await AndroidAlarmManager.oneShotAt(
-        recalculateDateTime,
-        alarm.recalculateAndroidAlarmId,
-        recalculateAlarmCallback,
-        wakeup: true,
-        exact: true,
-        rescheduleOnReboot: true,
-        params: {
-          'alarm': alarm.toMap()
-        }
-    );
+        recalculateDateTime, alarm.recalculateAndroidAlarmId, recalculateAlarmCallback,
+        wakeup: true, exact: true, rescheduleOnReboot: true, params: {'alarm': alarm.toMap()});
   } else {
     final coords = await convertAddressToCoordinates(address: alarm.destination);
-    debugPrint(coords.toString());
     if (coords != null) {
       final weather = await getWeather(coords[0], coords[1]);
       if (weather != null) {
@@ -95,25 +88,52 @@ setAlarm(Alarm alarm) async {
   await scheduleAlarm(alarm, leaveDatetime, weather: weatherMessage);
 }
 
-scheduleAlarm(Alarm alarm, DateTime leaveDatetime, {String? weather}) async {
+_scheduleSingleAlarm(
+    {required DateTime time,
+    required int alarmId,
+    bool vibrate = false,
+    String name = '',
+    bool anticipated = false,
+    String? weather}) async {
   await AndroidAlarmManager.oneShotAt(
-    // Setup an alarm which will call the `callback` function 1 minute before the `leaveDatetime`
-      leaveDatetime.subtract(const Duration(minutes: 1)),
-      alarm.androidAlarmId,
+      // Setup an alarm which will call the `callback` function 1 minute before the `anticipatedTime`
+      time.subtract(const Duration(minutes: 1)),
+      alarmId,
       setAlarmCallback,
       wakeup: true,
       exact: true,
       rescheduleOnReboot: true,
       params: {
-        'hour': leaveDatetime.hour,
-        'minutes': leaveDatetime.minute,
-        'vibrate': alarm.vibrate,
-        'name': alarm.name,
+        'hour': time.hour,
+        'minutes': time.minute,
+        'vibrate': vibrate,
+        'name': name,
+        'anticipated': anticipated,
         'weather': weather
       });
 }
 
+scheduleAlarm(Alarm alarm, DateTime leaveDatetime, {String? weather}) async {
+  if (alarm.anticipation > 0) {
+    final anticipatedTime = leaveDatetime.subtract(Duration(minutes: alarm.anticipation));
+    await _scheduleSingleAlarm(
+        time: anticipatedTime,
+        alarmId: alarm.androidAlarmId + 1,
+        vibrate: alarm.vibrate,
+        name: alarm.name,
+        anticipated: true);
+  }
+  await _scheduleSingleAlarm(
+      time: leaveDatetime,
+      alarmId: alarm.androidAlarmId,
+      vibrate: alarm.vibrate,
+      name: alarm.name,
+      anticipated: false,
+      weather: weather);
+}
+
 cancelAlarm(Alarm alarm) async {
   await AndroidAlarmManager.cancel(alarm.androidAlarmId);
+  await AndroidAlarmManager.cancel(alarm.androidAlarmId + 1);
   await AndroidAlarmManager.cancel(alarm.recalculateAndroidAlarmId);
 }

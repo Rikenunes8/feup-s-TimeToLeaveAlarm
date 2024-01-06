@@ -18,6 +18,7 @@ class DatabaseManager {
   static const String intermediateLocationCol3 = "intermediate_location_3";
   static const String intermediateLocationCol4 = "intermediate_location_4";
   static const String intermediateLocationCol5 = "intermediate_location_5";
+  static const String anticipationCol = "anticipation";
   static const String periodCol = "period";
   static const String periodDataCol = "period_data";
   static const String modeCol = "mode";
@@ -27,7 +28,7 @@ class DatabaseManager {
   static const String nameCol = "name";
   static const String ringtoneCol = "ringtone";
   static const String vibrateCol = "vibrate";
-  static const String snoozeCol = "snooze";
+  // static const String snoozeCol = "snooze";
   static const String turnedOnCol = "turned_on";
   static const String androidAlarmIdCol = "android_alarm_id";
   static const String recalculateAndroidAlarmIdCol = "recalculate_android_alarm_id";
@@ -67,6 +68,7 @@ class DatabaseManager {
         $intermediateLocationCol5 TEXT,
         $leaveTimeCol TEXT,
         $arriveTimeCol TEXT,
+        $anticipationCol Integer,
         $periodCol INTEGER,
         $periodDataCol TEXT,
         $modeCol TEXT,
@@ -76,7 +78,6 @@ class DatabaseManager {
         $nameCol TEXT,
         $ringtoneCol TEXT,
         $vibrateCol INTEGER,
-        $snoozeCol INTEGER,
         $turnedOnCol INTEGER,
         $androidAlarmIdCol INTEGER,
         $recalculateAndroidAlarmIdCol INTEGER
