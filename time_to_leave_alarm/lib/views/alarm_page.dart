@@ -130,7 +130,7 @@ class _AlarmPageState extends State<AlarmPage> {
                     onPressed: () {
                       importAlarmDialog();
                     },
-                    icon: Icon(Icons.file_upload_outlined)),
+                    icon: const Icon(Icons.file_upload_outlined)),
           ]),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),

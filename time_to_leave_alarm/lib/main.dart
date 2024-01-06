@@ -7,6 +7,7 @@ import 'package:time_to_leave_alarm/theme.dart';
 import 'package:time_to_leave_alarm/views/alarm_page.dart';
 import 'package:time_to_leave_alarm/views/home_page.dart';
 import 'package:time_to_leave_alarm/views/map_page.dart';
+import 'package:time_to_leave_alarm/views/ringtones_page.dart';
 
 void main() async {
   // Be sure to add this line if initialize() call happens before runApp()
@@ -36,8 +37,8 @@ class MyApp extends StatelessWidget {
             routes: {
               MyHomePage.route: (context) => const MyHomePage(title: appTitle),
               MapPage.route: (context) => const MapPage(title: 'Map'),
-              AlarmPage.route: (context) =>
-                  const AlarmPage(title: 'Setup Alarm'),
+              AlarmPage.route: (context) => const AlarmPage(title: 'Setup Alarm'),
+              RingtonesPage.route: (context) => const RingtonesPage(),
             },
           );
         });
