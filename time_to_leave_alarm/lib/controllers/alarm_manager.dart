@@ -60,6 +60,7 @@ void recalculateAlarmCallback(int id, Map<String, dynamic> params) {
 }
 
 setAlarm(Alarm alarm) async {
+  String? weatherMessage;
   final leaveDatetime = stringToDateTime(alarm.leaveTime);
 
   await AndroidAlarmManager.cancel(alarm.recalculateAndroidAlarmId);
@@ -79,17 +80,19 @@ setAlarm(Alarm alarm) async {
         }
     );
   } else {
-    convertAddressToCoordinates(address: alarm.destination, then: (lat, lng) {
-      getWeather(lat, lng, (weather) {
+    final coords = await convertAddressToCoordinates(address: alarm.destination);
+    debugPrint(coords.toString());
+    if (coords != null) {
+      final weather = await getWeather(coords[0], coords[1]);
+      if (weather != null) {
         final String description = weather['weather'][0]['description'];
-        final minTemp = weather['main']['temp_min'];
-        final maxTemp = weather['main']['temp_max'];
-        scheduleAlarm(alarm, leaveDatetime, weather: '${description.capitalize()} | $minTempºC | $maxTempºC');
-      });
-    });
+        final temp = weather['main']['temp'];
+        weatherMessage = '${description.capitalize()} | $tempºC';
+      }
+    }
   }
 
-  await scheduleAlarm(alarm, leaveDatetime);
+  await scheduleAlarm(alarm, leaveDatetime, weather: weatherMessage);
 }
 
 scheduleAlarm(Alarm alarm, DateTime leaveDatetime, {String? weather}) async {
