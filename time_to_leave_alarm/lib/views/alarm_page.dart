@@ -149,7 +149,7 @@ class _AlarmPageState extends State<AlarmPage> {
             AlarmSection(controller: alarmController),
             const SizedBox(
               height: 50,
-            )
+            ),
           ],
         ),
       ),

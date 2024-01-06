@@ -12,7 +12,9 @@ void launchAlarmNavigation(Alarm alarm) async {
 
 Uri _buildUri(Alarm alarm) {
   const String baseUrl = "https://www.google.com/maps/dir/?api=1";
-  final String origin = "&origin=${alarm.origin}";
+  final String origin = alarm.origin != CURRENT_LOCATION_STRING
+      ? "&origin=${alarm.origin}"
+      : "";
   final String destination = "&destination=${alarm.destination}";
   final String waypoints =
       "&waypoints=${alarm.getIntermediateLocations().where((e) => e.isNotEmpty).join("|")}";

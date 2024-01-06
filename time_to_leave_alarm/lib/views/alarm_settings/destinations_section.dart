@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_address_tile.dart';
 import 'package:time_to_leave_alarm/components/alarm_settings_section.dart';
+import 'package:time_to_leave_alarm/components/current_location_switch.dart';
 import 'package:time_to_leave_alarm/models/alarm.dart';
 
 class DestinationsSection extends StatelessWidget {
@@ -10,11 +11,14 @@ class DestinationsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final usingCurrentLocation = controller.fromController.text == CURRENT_LOCATION_STRING;
+
     return AlarmSettingsSection(sectionTitle: "Destinations", children: [
       AlarmSettingsAddressTile(
         icon: Icons.my_location,
         hintText: "From",
         controller: controller.fromController,
+        disabled: usingCurrentLocation,
       ),
       for (final controller in controller.intermediateControllers)
         AlarmSettingsAddressTile(
@@ -27,6 +31,16 @@ class DestinationsSection extends StatelessWidget {
         hintText: "To",
         controller: controller.toController,
       ),
+      CurrentLocationSwitch(
+        value: usingCurrentLocation, 
+        onChanged: (value) => {
+          if (value) {
+            controller.fromController.text = CURRENT_LOCATION_STRING
+          } else {
+            controller.fromController.text = ''
+          }
+        }
+      )
     ]);
   }
 }
