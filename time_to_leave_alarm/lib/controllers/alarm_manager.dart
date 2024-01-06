@@ -22,6 +22,7 @@ void setAlarmCallback(int id, Map<String, dynamic> params) {
     arguments: <String, dynamic>{
       'android.intent.extra.alarm.HOUR': params['hour'],
       'android.intent.extra.alarm.MINUTES': params['minutes'],
+      'android.intent.extra.alarm.VIBRATE': params['vibrate'],
       'android.intent.extra.alarm.SKIP_UI': true,
       'android.intent.extra.alarm.MESSAGE': message,
     },
@@ -45,9 +46,8 @@ void recalculateAlarmCallback(int id, Map<String, dynamic> params) {
         final leaveTimeString = formatDateTime(
             stringToDateTime(alarm.arriveTime).subtract(Duration(seconds: time)));
 
-        final androidAlarmId = Random().nextInt(2147483647);
         alarm.leaveTime = leaveTimeString;
-        alarm.recalculateAndroidAlarmId = androidAlarmId;
+        alarm.recalculateAndroidAlarmId = Random().nextInt(2147483647);
 
         DatabaseManager().updateAlarm(alarm);
         if (alarm.turnedOn) {
@@ -104,6 +104,7 @@ scheduleAlarm(Alarm alarm, DateTime leaveDatetime, {String? weather}) async {
       params: {
         'hour': leaveDatetime.hour,
         'minutes': leaveDatetime.minute,
+        'vibrate': alarm.vibrate,
         'name': alarm.name,
         'weather': weather
       });
